@@ -1,0 +1,21 @@
+.primary {
+    width: 100px;
+    padding: 10px 20px;
+    background-color: #3373B1;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.primary-left-aligned {
+    margin-left: calc(100% - 100px);   
+}
+
+.disabled {
+    cursor: not-allowed;
+}
+
+.primary-center-aligned {
+    align-self: center;
+}

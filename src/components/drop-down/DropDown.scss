@@ -1,0 +1,12 @@
+.drop-down {
+    width: 150px;
+    border-radius: 5px;
+    border: 2px solid lightgrey;
+    option:hover {
+        background-color: #FF6600;
+    }
+    &:focus {
+        outline: none !important;
+        border: 2px solid #3373B1;
+    }
+}

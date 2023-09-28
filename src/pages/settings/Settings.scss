@@ -1,0 +1,69 @@
+.settings-container {
+    width: auto;
+}
+
+.card-container {
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+    margin: 20px 0px 0px 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    // gap: 20px;
+    height: max-content;
+    width: 50%;
+    padding: 10px 20px 20px 20px;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.card-mainheading {
+    font-size: 20px;
+}
+
+.whatsapp-format {
+    height: 30px;
+    background-color: transparent;
+    border: none;
+    width: 90%;
+    overflow-x: scroll;
+}
+
+.bulk-msg-subheading {
+    font-size: 16px;
+}
+
+.file-selector {
+    display: none;
+}
+
+.whatsapp-msgformat-container {
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+    margin: 20px 0px 0px 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    // gap: 20px;
+    height: max-content;
+    width: 50%;
+    padding: 10px;
+}
+
+.edit-icon {
+    color: #3373B1;
+    cursor: pointer;
+}
+
+.format-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.format-body {
+    width: 90%;
+    overflow-y: scroll;
+}

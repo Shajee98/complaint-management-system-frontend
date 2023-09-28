@@ -1,0 +1,19 @@
+.secondary {
+    padding: 10px;
+    background-color: #FF6600;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.secondary-left-aligned {
+    align-self: flex-end;
+}
+
+.secondary-right-aligned {
+    align-self: flex-start;
+}

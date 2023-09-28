@@ -1,0 +1,52 @@
+.departments-container {
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    padding: 10px;
+}
+
+.upper-half {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.searchbar {
+    border: 2px solid grey;
+    border-radius: 20px;
+    height: 20px;
+    padding-left: 10px;
+    padding-right: 30px;
+    &:focus {
+        outline: none !important;
+        border: 2px solid #3373B1;
+    }
+}
+
+.search-container {
+    position: relative;
+    display: flex;
+    width: 400px;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    color: grey;
+    right: 10px;
+}
+
+.filterandsearch {
+    display: flex;
+    justify-content: space-between;
+    // padding: 10px;
+}
+
+.complaints-table {
+    border: 1px solid grey;
+    border-radius: 5px;
+
+    .table-header {
+        background-color: #F8F8FB;
+    }
+}
