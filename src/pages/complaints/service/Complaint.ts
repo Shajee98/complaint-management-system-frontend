@@ -1,0 +1,11 @@
+import {getRequest} from '../../../../utils/auth'
+import { catchAxiosError } from '../../../../utils/axios'
+import { API_URL } from '../../../../utils/apiConfig'
+
+export const getAllDepartments = () => {
+  return catchAxiosError(getRequest(`${API_URL}/departments/get/all`))
+}
+
+export const getAllComplaints = (data: {offset: number, complaint_type_id: number, department_id: number}) => {
+    return catchAxiosError(getRequest(`${API_URL}/complaints/get/all?offset=${data.offset}&department_id=${data.department_id}&complaint_type_id=${data.complaint_type_id}`))
+}

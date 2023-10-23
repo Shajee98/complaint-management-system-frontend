@@ -35,7 +35,7 @@ const FormInput = ({
         onChange={onChange}
         disabled={disabled}
       />
-      {error && <p className="error">This feild is required</p>}
+      {value.toString().length == 0 && error ? <p className="error">This feild is required</p> : <p className="error"></p>}
     </div>
   )
 }

@@ -4,6 +4,8 @@
     align-items: center;
     padding-left: 10px;
     padding-right: 10px;
+    // padding-top: 5px;
+    // padding-bottom: 5px;
     height: 10vh;
     // width: 100vw;
     &.shadow {
@@ -11,9 +13,20 @@
     }
 }
 
+.logo-container {
+    width: 10vw;
+    height: auto;
+
+    .logo {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+}
+
 .logo {
     width: 150px;
-    height: 7vh;
+    height: 15vh;
 }
 
 .profile-avatar {
@@ -25,11 +38,11 @@
 }
 
 .logout-button {
-    position: absolute;
-    margin-top: 50px;
-    margin-right: 30px;
+    // position: absolute;
+    // margin-top: 50px;
+    // margin-right: 30px;
     background: white;
-    border: 2px solid #3373B1;
+    border: 1px solid #3373B1;
     border-radius: 5px;
     height: 20px;
     &:hover {

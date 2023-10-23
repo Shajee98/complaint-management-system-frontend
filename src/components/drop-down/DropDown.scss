@@ -1,12 +1,14 @@
-.drop-down {
-    width: 150px;
-    border-radius: 5px;
-    border: 2px solid lightgrey;
-    option:hover {
-        background-color: #FF6600;
-    }
-    &:focus {
-        outline: none !important;
-        border: 2px solid #3373B1;
-    }
-}
+.drop-down-wrapper {
+    // margin-top: 20px;
+  }
+  
+  /* Input style */
+  
+  /* Label */
+label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #344054;
+    display: block;
+    margin-bottom: 8px;
+  }

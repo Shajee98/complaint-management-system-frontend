@@ -3,7 +3,7 @@ import './PrimaryButton.scss'
 interface Props {
     text: string
     onClick?: (e: any) => void
-    className: string
+    className?: string
     type?: "button" | "reset" | "submit" | undefined
 }
 

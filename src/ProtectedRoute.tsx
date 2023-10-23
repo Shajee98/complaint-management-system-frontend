@@ -1,13 +1,14 @@
 import { Navigate, Outlet } from 'react-router-dom'
+import { LocalStorageKeys, getFromStorage } from '../utils/localStorage';
 
 interface Props {
-    user: boolean
     redirectPath: string
 }
 
-const ProtectedRoute = (props: Props) => {
-    if (!props.user) {
-      return <Navigate to={props.redirectPath} replace />
+const ProtectedRoute = ({redirectPath}: Props) => {
+  
+    if (!getFromStorage(LocalStorageKeys.USER)) {
+      return <Navigate to={redirectPath} replace />
     }
     
     return <Outlet />

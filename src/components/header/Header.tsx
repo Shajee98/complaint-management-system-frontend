@@ -1,17 +1,29 @@
+import { useState } from 'react'
 import { BsFillPersonFill } from 'react-icons/bs'
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md'
+import { FiLogOut } from 'react-icons/fi'
+import { userLogout } from './services/Header'
+import { useNavigate } from 'react-router-dom'
 import './Header.scss'
-import { useState } from 'react'
+import { LocalStorageKeys, removeFromStorage } from '../../../utils/localStorage'
 
 const Header = () => {
     const [visible, setVisible] = useState(false)
+    const navigate = useNavigate()
+    const logout = () => {
+      userLogout()
+      removeFromStorage(LocalStorageKeys.USER)
+      navigate('/login')
+    }
   return (
     <div className='header-container shadow'>
-      <img className='logo' src="../../../assets/AEG-pakistan.png" alt="logo" />
+      <div className='logo-container'>
+        <img className='logo' src="../../../assets/AEG-pakistan.png" alt="logo" />
+      </div>
       <div className='profile-avatar' onClick={() => setVisible(!visible)}>
         <BsFillPersonFill />
-        {visible ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />}
-        {visible && <button className='logout-button'>Logout</button>}
+        {/* {visible ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />} */}
+        <button className='logout-button' onClick={logout}><FiLogOut /></button>
       </div>
     </div>
   )

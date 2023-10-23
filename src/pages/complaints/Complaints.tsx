@@ -1,127 +1,446 @@
-import DropDown from '../../components/drop-down/DropDown'
-import { AiOutlineSearch } from 'react-icons/ai'
-import './Complaints.scss'
+import DropDown from "../../components/drop-down/DropDown";
+import { AiOutlineSearch } from "react-icons/ai";
+import { BsEyeFill } from "react-icons/bs";
+import { FaCommentDots } from "react-icons/fa";
+import "./Complaints.scss";
 import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-    ArcElement,
-    Filler
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
-import { useState } from 'react';
-import Modal from '../../components/modal/Modal';
-import PrimaryButton from '../../components/primary-button/PrimaryButton';
-import SecondaryButton from '../../components/secondary-button/SecondaryButton';
-import Heading1 from '../../components/typography/heading-1/Heading1';
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  Filler,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+import { useEffect, useState } from "react";
+import CreateComplaint from "../../components/modal/create-complaint/CreateComplaint";
+import SecondaryButton from "../../components/secondary-button/SecondaryButton";
+import Heading1 from "../../components/typography/heading-1/Heading1";
+import { FilterSelectStyle, StatusStyle } from "../../components/drop-down/ReactSelectStyles";
+import ComplaintDetails from "../../components/modal/complaint-details/ComplaintDetails";
+import Comments from "../../components/modal/comments/Comments";
+import { LocalStorageKeys, getFromStorage } from "../../../utils/localStorage";
+import Header from "../../components/header/Header";
+import Navbar from "../../components/navbar/Navbar";
+import { getAllComplaints, getAllDepartments } from "./service/Complaint";
+import { getAllStatuses } from "../../components/modal/create-complaint/services/CreateComplaint";
 
 ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-    ArcElement,
-    Filler
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  Filler
 );
 
 const Complaints = () => {
-    const [showModal, setShowModal] = useState(false)
-    const fetchComplaints = (option: string) => {
-        console.log(option)
+  const [isSuperAdmin, setIsSuperAdmin] = useState(true)
+  const [complaints, setComplaints] = useState<any[]>([])
+  const [complaintsCopy, setComplaintsCopy] = useState<any[]>([])
+  // const [searchValue, setSearchValue] = useState("")
+  const [showCommentsModal, setShowCommentsModal] = useState(false);
+  const [showAddComplaintModal, setShowAddComplaintModal] = useState(false);
+  const [showComplaintDetailModal, setShowComplaintDetailModal] =
+    useState(false);
+  const [departments, setDepartments] = useState<{id: number, value: string, label: string}[]>([])
+  const [selectedDept, setSelectedDept] = useState<any>()
+  const [statuses, setStatuses] = useState<{id: number, value: string, label: string, color:string}[]>([])
+  const [selectedStatus, setSelectedStatus] = useState<any>()
+  const [complaintId, setComplaintId] = useState<number>(0);
+  const [complaintType, setComplaintType] = useState(1)
+
+  // useEffect(() => {
+  //   const user = getFromStorage(LocalStorageKeys.USER)
+  //   if (user?.user?.user_type_id == 1)
+  //   {
+  //     setSelectedDept({
+  //       id: user?.user?.department_id,
+  //       value: user?.user?.department?.name,
+  //       label: user?.user?.department?.name?.toLowerCase()
+  //     })
+  //   }
+  //   else if (user?.user?.user_type_id == 1)
+  //   console.log("Userrrr =>>> ", user)
+  // }, [])
+  const fetchComplaints = async (department_id: number, offset: number) => {
+    try {
+        const response = await getAllComplaints({department_id: department_id, complaint_type_id: complaintType, offset: offset})
+        setComplaints(response.data.data.complaints.rows)
+        setComplaintsCopy(response.data.data.complaints.rows)
+    } catch (error) {
+        console.log("error ===> ", error)
     }
-    let graph: any[] = []
-    let graphData = [{ month: 'Jan', count: 0 }, { month: 'Feb', count: 0 }, { month: 'Mar', count: 0 }, { month: 'Apr', count: 0 }, { month: 'May', count: 0 }, { month: 'Jun', count: 0 }, { month: 'Jul', count: 0 }, { month: 'Aug', count: 0 }, { month: 'Sep', count: 0 }, { month: 'Oct', count: 0 }, { month: 'Nov', count: 0 }, { month: 'Dec', count: 0 }];
-    graph = [...graphData]
+  };
+
+  useEffect(() => {
+    fetchComplaints(selectedDept?.id, 0)
+  }, [complaintType])
+  const fetchDepartments = async () => {
+    try {
+        const response = await getAllDepartments()
+        const deptCopy = response.data.data.departments.map((department: any) => {
+            return {
+                id: department.id,
+                value: department.name,
+                label: department.name.toLowerCase()
+            }
+        })
+        console.log("deptCopy ==> ", deptCopy)
+        setDepartments([...deptCopy])
+        const user = getFromStorage(LocalStorageKeys.USER)
+        if (user?.user?.user_type_id == 1 || user?.user?.user_type_id == 3)
+        {
+          setIsSuperAdmin(false)
+          setSelectedDept({
+            id: user?.user?.department_id,
+            value: user?.user?.department?.name,
+            label: user?.user?.department?.name?.toLowerCase()
+          })
+          fetchComplaints(user?.user?.department_id, 0)
+        }
+        else if (user?.user?.user_type_id == 2)
+        {
+          setSelectedDept(deptCopy[0])
+          fetchComplaints(deptCopy[0].id, 0)
+          setIsSuperAdmin(true)
+        }
+        console.log("departments ==> ", departments)
+        return deptCopy
+    } catch (error) {
+        console.log("error ===> ", error)
+    }
+  }
+
+  const fetchStatuses = async () => {
+    const response = await getAllStatuses()
+    const statusesCopy = response.data.data.statuses.map((status: any) => {
+      return {
+          id: status.id,
+          value: status.name,
+          label: status.name.toUpperCase()
+      }
+  })
+  const statusModified = statusesCopy.map((status: any) => {
+    switch (status.value) {
+      case "Open":
+        return {
+          ...status,
+          color: '#FF5733'
+        }
+      case "Resolved":
+        return {
+          ...status,
+          color: "#00FF00"
+        }
+      case "In Progress":
+        return {
+          ...status,
+          color: "#FFD700"
+        }
+      case "Cancelled":
+        return {
+            ...status,
+            color: "#008000"
+          }
+      default:
+        break;
+    }
+  })
+  console.log("statusesCopy ==> ", statusesCopy)
+  setStatuses([...statusModified])
+  setSelectedStatus(statusesCopy[0])
+  console.log("departments ==> ", departments)
+  return statusesCopy
+  }
+
+  const searchComplaints = async (keyword: string) => {
+    const inputString = keyword;
+    const regex = /\s+/g;
+
+    let copyComplaints = [...complaintsCopy];
+    let resultString: any;
+
+    if (inputString.trim() === "") {
+      // setProductPage(product_page_previous);
+      // setProductsPerPage(productsPerPagePrevious);
+      resultString = inputString;
+      setComplaints([...complaintsCopy]);
+    } else {
+      resultString = inputString.trim().replace(regex, " ");
+      resultString = resultString.toLowerCase();
+
+      copyComplaints = copyComplaints.filter((complaint: any) => {
+        let customerNumber = complaint?.customerNumber
+        let description = complaint?.description
+        customerNumber = customerNumber.toLowerCase()
+        description = description.toLowerCase()
+        return (
+          customerNumber.includes(resultString) ||
+          description.includes(resultString)
+        );
+      });
+      setComplaints([...copyComplaints]);
+      // setProductPage(0);
+      // setProductsPerPage(10);
+    }
+  }
+
+  const filterDepartments = (inputValue: string) => {
+    return departments.filter((i) =>
+      i.label.toLowerCase().includes(inputValue.toLowerCase())
+    );
+  };
+
+  const loadOptions = (searchValue: string, callback: any) => {
+        console.log("departments ==> ", departments)
+        setTimeout(() => {
+            callback(filterDepartments(searchValue));
+          }, 2000);
+  }
+
+  useEffect(() => {
+    fetchDepartments()
+    fetchStatuses()
+    // fetchComplaints(selectedDept?.id, 0)
+  }, [])
+
+  const handleDepartmentChange = (option: any) => {
+    console.log("selectedDept ===> ", option)
+      setSelectedDept(option)
+      fetchComplaints(option.id, 0)
+    }
+
+  const handleStatusChange = (option: any) => {
+      console.log("selectedStatus ===> ", selectedStatus)
+      setSelectedStatus(option)
+    }
+
+  const handleViewComplaintDetails = (id: number) => {
+    setComplaintId(id);
+    setShowComplaintDetailModal(true);
+  };
+
+  const handleViewComplaintComments = (id: number) => {
+    setComplaintId(id);
+    setShowCommentsModal(true);
+  };
+
+  const toggleComplaintType = (type_id: number) => {
+    setComplaintType(type_id)
+  }
+
+  const reportedOn = (dateString: any) => {
+    const date = new Date(dateString);
+
+    // Define functions to add leading zeros to single-digit numbers
+    const addLeadingZero = (num: any) => (num < 10 ? "0" + num : num);
+
+    // Extract date components
+    const day = addLeadingZero(date.getDate());
+    const month = addLeadingZero(date.getMonth() + 1); // Month is zero-based
+    const year = date.getFullYear();
+    const hours = addLeadingZero(date.getUTCHours());
+    const minutes = addLeadingZero(date.getUTCMinutes());
+
+    // Create the formatted date string
+    const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}`;
+    return formattedDate
+  }
+  let graph: any[] = [];
+  let graphData = [
+    { month: "Jan", count: 0 },
+    { month: "Feb", count: 0 },
+    { month: "Mar", count: 0 },
+    { month: "Apr", count: 0 },
+    { month: "May", count: 0 },
+    { month: "Jun", count: 0 },
+    { month: "Jul", count: 0 },
+    { month: "Aug", count: 0 },
+    { month: "Sep", count: 0 },
+    { month: "Oct", count: 0 },
+    { month: "Nov", count: 0 },
+    { month: "Dec", count: 0 },
+  ];
+  graph = [...graphData];
   return (
-      <div className='complaints-container'>
-        {showModal && <Modal onClose={() => setShowModal(false)}/>}
-      <div className='upper-half'>
-        <Heading1 text='Complaints Management' />
-        <div className='filterandsearch'>
-            <div className='search-container'>
-            <input type="text" className='searchbar' placeholder='Search by ID, customer name or phone number'/>
-            <AiOutlineSearch className="search-icon"/>
+    <>
+      {getFromStorage(LocalStorageKeys.USER) && <Header />}
+      <div
+        className={`${
+          getFromStorage(LocalStorageKeys.USER) &&
+          Object.entries(getFromStorage(LocalStorageKeys.USER)).length != 0
+            ? "child-container-loggedIn"
+            : "child-container-loggedOut"
+        }`}
+      >
+        {getFromStorage(LocalStorageKeys.USER) && <Navbar />}
+        <div
+          className={`${
+            getFromStorage(LocalStorageKeys.USER) &&
+            Object.entries(getFromStorage(LocalStorageKeys.USER)).length != 0
+              ? "left-container"
+              : "login-signup-container"
+          }`}
+        >
+          <div className="complaints-container">
+            {showAddComplaintModal && (
+              <CreateComplaint
+                fetchComplaints={() => fetchComplaints(selectedDept.id, 0)}
+                onClose={() => setShowAddComplaintModal(false)}
+              />
+            )}
+            {showComplaintDetailModal && complaintId && (
+              <ComplaintDetails
+                complaintId={complaintId}
+                onClose={() => setShowComplaintDetailModal(false)}
+              />
+            )}
+            {showCommentsModal && (
+              <Comments
+                complaintId={complaintId}
+                onClose={() => setShowCommentsModal(false)}
+              />
+            )}
+            <div className="upper-half">
+              <Heading1 text="Complaints Management" />
+              <div className="filterandsearch">
+                <div className="search-container">
+                  <input
+                    type="text"
+                    className="searchbar"
+                    placeholder="Search by customer number or description"
+                    // value={searchValue}
+                    onChange={(e) => searchComplaints(e.target.value)}
+                  />
+                  <AiOutlineSearch className="search-icon" />
+                </div>
+                {isSuperAdmin && selectedDept && <DropDown
+                  label="Departments"
+                  defaultValue={selectedDept}
+                  styles={FilterSelectStyle}
+                  onChange={handleDepartmentChange}
+                  options={departments}
+                />}
+                {selectedStatus && <DropDown
+                  label="Status"
+                  defaultValue={selectedStatus}
+                  styles={StatusStyle}
+                  onChange={handleStatusChange}
+                  options={statuses}
+                />}
+              </div>
+              <div className="complaint-toggle-container">
+                <SecondaryButton className="complaint-toggle" text="AEG" onClick={() => toggleComplaintType(1)}/>
+                <SecondaryButton className="complaint-toggle" text="TicketG" onClick={() => toggleComplaintType(2)}/>
+              </div>
+              <SecondaryButton
+                className="secondary-left-aligned"
+                text="Add Complaint"
+                onClick={() => setShowAddComplaintModal(true)}
+              />
             </div>
-            <DropDown options={["Visa", "Travel", "Transportation"]} apiFunction={fetchComplaints}/>
-        </div>
-        <SecondaryButton className='secondary-left-aligned' text='Add Complaint' onClick={() => setShowModal(true)}/>
-      </div>
-      <table className='complaints-table'>
-        <tr className='table-header'>
-            <th>Complaint ID</th>
-            <th>Customer Name</th>
-            <th>Phone number</th>
-            <th>Reported on</th>
-            <th>Assigned  to</th>
-            <th>Department</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-      </table>
-      <Line
-        data={{
-            labels: graph.map((monthData) => {
-                return monthData.month
-            }),
-            datasets: [{
-                label: 'Complaints',
-                
-                data: [20, 40, 60, 100, 90, 40, 10],
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.2,
-                pointStyle: 'circle',
-                pointBackgroundColor: "white",
-                pointBorderColor: "red",
-                pointBorderWidth: 5,
-                pointHoverBorderWidth: 5,
-                pointRadius: 7,
-                pointHitRadius: 5,
-                pointHoverRadius: 10,
-                fill: true,
-                backgroundColor: 'rgba(75,192,192,0.2)',
-            }]
-        }}
-        options={{
-            borderColor: 'rgb(75, 192, 192)',
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
+            <table className="complaints-table">
+              <tr className="table-header">
+                <th>Complaint ID</th>
+                <th>Phone number</th>
+                <th>Reported on</th>
+                <th>Assigned to</th>
+                <th>Department</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+              {complaints.map((complaint) => (
+              <tr className="table-row">
+                <td>{complaint.id}</td>
+                <td>{complaint.customerNumber}</td>
+                <td>{reportedOn(complaint.createdAt)}</td>
+                <td>{complaint.user.first_name + " " + complaint.user.last_name}</td>
+                <td>{complaint.department.name}</td>
+                <td>{complaint.complaint_status.name}</td>
+                <td className="action-cell">
+                  <BsEyeFill
+                    className="details-icon"
+                    color="#252525"
+                    onClick={() => handleViewComplaintDetails(complaint.id)}
+                  />
+                  <FaCommentDots
+                    color="#3373B1"
+                    className="comments-icon"
+                    onClick={() => handleViewComplaintComments(complaint.id)}
+                  />
+                </td>
+              </tr>
+                  ))}
+            </table>
+            <Line
+              data={{
+                labels: graph.map((monthData) => {
+                  return monthData.month;
+                }),
+                datasets: [
+                  {
+                    label: "Complaints",
+
+                    data: [20, 40, 60, 100, 90, 40, 10],
+                    borderColor: "rgb(75, 192, 192)",
+                    tension: 0.2,
+                    pointStyle: "circle",
+                    pointBackgroundColor: "white",
+                    pointBorderColor: "red",
+                    pointBorderWidth: 5,
+                    pointHoverBorderWidth: 5,
+                    pointRadius: 7,
+                    pointHitRadius: 5,
+                    pointHoverRadius: 10,
+                    fill: true,
+                    backgroundColor: "rgba(75,192,192,0.2)",
+                  },
+                ],
+              }}
+              options={{
+                borderColor: "rgb(75, 192, 192)",
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: "top",
                     labels: {
-                        color : 'white',
-                      }
-                }
-            },
-            scales: {
-                'y': {
-                    'ticks': {
-                        // Include a dollar sign in the ticks
-                        callback: function(value, index, ticks) {
-                            return value;
-                        }
+                      color: "white",
+                    },
+                  },
+                },
+                scales: {
+                  y: {
+                    ticks: {
+                      // Include a dollar sign in the ticks
+                      callback: function (value, index, ticks) {
+                        return value;
+                      },
                     },
                     grid: {
-                        display: false
-                    }
-                },
-                'x': {
+                      display: false,
+                    },
+                  },
+                  x: {
                     grid: {
-                        display: false
-                    }
-                }
-            }
-        }}
-    />
-    </div>
-  )
-}
+                      display: false,
+                    },
+                  },
+                },
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
 
-export default Complaints
+export default Complaints;
