@@ -78,22 +78,23 @@ const Signup = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     try {
-      console.log("Hello pliss signup");
       e.preventDefault();
       if (
         !firstName.trim() ||
-        lastName.trim() ||
+        !lastName.trim() ||
         !username.trim() ||
         !password.trim()
       ) {
+        console.log("Hello pliss signup 2");
         setError(true);
         return;
       } else {
         setError(false);
+        
         await userSignUp({
           first_name: firstName,
           last_name: lastName,
-          username: username,
+          user_name: username,
           password,
           user_type_id: selectedUserType.id,
           department_id: selectedDept.id,

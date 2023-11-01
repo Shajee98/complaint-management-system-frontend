@@ -13,3 +13,7 @@ export const getAllStatuses = () => {
 export const getAllDepartments = () => {
   return catchAxiosError(getRequest(`${API_URL}/departments/get/all`))
 }
+
+export const getComplaintTypes = () => {
+  return catchAxiosError(getRequest(`${API_URL}/users/complaint-types/get/all`))
+}

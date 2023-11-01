@@ -56,6 +56,8 @@ const Complaints = () => {
   const [selectedStatus, setSelectedStatus] = useState<any>()
   const [complaintId, setComplaintId] = useState<number>(0);
   const [complaintType, setComplaintType] = useState(1)
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
   // useEffect(() => {
   //   const user = getFromStorage(LocalStorageKeys.USER)
@@ -70,9 +72,45 @@ const Complaints = () => {
   //   else if (user?.user?.user_type_id == 1)
   //   console.log("Userrrr =>>> ", user)
   // }, [])
+
+  const clearDate = () => {
+    setComplaints(complaintsCopy);
+    setFromDate("");
+    setToDate("");
+    // setPage(previousPage);
+    // setRowsPerPage(rowsPerPagePrevious);
+  };
+
+  const searchHandler = () => {
+    let copyComplaints = [...complaintsCopy];
+    if (fromDate && toDate) {
+      copyComplaints = copyComplaints.filter((complaint: any) => {
+        const orderDate = new Date(complaint?.createdAt);
+        const fromDateObj = new Date(fromDate);
+        const toDateObj = new Date(toDate);
+        // setPage(0);
+        // setRowsPerPage(10);
+        return orderDate >= fromDateObj && orderDate <= toDateObj;
+      });
+    }
+    if (toDate == "" && fromDate == "") {
+      // setMessage("Please select to and from date");
+      // setShowMessage(true);
+    }
+    if (toDate != "" && fromDate == "") {
+      // setMessage("Please select from date");
+      // setShowMessage(true);
+    }
+    if (toDate == "" && fromDate != "") {
+      // setMessage("Please select to date");
+      // setShowMessage(true);
+    }
+    setComplaints(copyComplaints);
+  };
+
   const fetchComplaints = async (department_id: number, offset: number) => {
     try {
-        const response = await getAllComplaints({department_id: department_id, complaint_type_id: complaintType, offset: offset})
+        const response = await getAllComplaints({department_id: department_id, complaint_type_id: complaintType, complaint_status_id: selectedStatus.id, offset: offset})
         setComplaints(response.data.data.complaints.rows)
         setComplaintsCopy(response.data.data.complaints.rows)
     } catch (error) {
@@ -82,7 +120,7 @@ const Complaints = () => {
 
   useEffect(() => {
     fetchComplaints(selectedDept?.id, 0)
-  }, [complaintType])
+  }, [complaintType, selectedStatus])
   const fetchDepartments = async () => {
     try {
         const response = await getAllDepartments()
@@ -299,6 +337,7 @@ const Complaints = () => {
             )}
             {showComplaintDetailModal && complaintId && (
               <ComplaintDetails
+                fetchComplaints={() => fetchComplaints(selectedDept.id, 0)}
                 complaintId={complaintId}
                 onClose={() => setShowComplaintDetailModal(false)}
               />
@@ -346,6 +385,50 @@ const Complaints = () => {
                 text="Add Complaint"
                 onClick={() => setShowAddComplaintModal(true)}
               />
+              <div className="date-filter-container">
+                <div className="date-filter-wrapper">
+                  <div className="individual-date-filter">
+                    <label className="date-filter-label">
+                      From
+                    </label>
+                    <input
+                      type="date"
+                      name=""
+                      id=""
+                      placeholder="From"
+                      className="date-selector"
+                      value={fromDate}
+                      max={toDate}
+                      onChange={(e) => setFromDate(e.target.value)}
+                      onKeyDown={(e) => {
+                        e.preventDefault();
+                        return;
+                      }}
+                    />
+                  </div>
+                  <div className="individual-date-filter">
+                    <label className="date-filter-label">
+                      To
+                    </label>
+                    <input
+                      type="date"
+                      name=""
+                      id=""
+                      placeholder="To"
+                      className="date-selector"
+                      value={toDate}
+                      min={fromDate}
+                      onChange={(e) => setToDate(e.target.value)}
+                      onKeyDown={(e) => {
+                        e.preventDefault();
+                        return;
+                      }}
+                    />
+                  </div>
+                  <SecondaryButton text="Clear" onClick={clearDate} className="date-filter-button"/>
+                  <SecondaryButton text="Search" onClick={searchHandler} className="date-filter-button"/>
+                </div>
+              </div>
             </div>
             <table className="complaints-table">
               <tr className="table-header">

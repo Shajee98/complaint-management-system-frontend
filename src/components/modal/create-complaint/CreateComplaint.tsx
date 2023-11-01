@@ -1,4 +1,4 @@
-import { FormEvent, useState, ChangeEvent, useEffect } from 'react'
+import { FormEvent, useState, ChangeEvent, useEffect, createRef, useRef } from 'react'
 import FormInput from '../../form-input/FormInput'
 import Heading2 from '../../typography/heading-2/Heading2'
 import PrimaryButton from '../../primary-button/PrimaryButton'
@@ -7,10 +7,12 @@ import './CreateComplaint.scss'
 import DropDown from '../../drop-down/DropDown'
 import { FormSelectStyle, StatusStyle } from '../../drop-down/ReactSelectStyles'
 import SecondaryButton from '../../secondary-button/SecondaryButton'
-import { getAllDepartments } from '../../../components/modal/create-complaint/services/CreateComplaint'
+import { getAllDepartments, getComplaintTypes } from '../../../components/modal/create-complaint/services/CreateComplaint'
 import { getAllDeptStaffs, getAllStatuses } from './services/CreateComplaint'
 import { postRequest, postRequestFormData } from '../../../../utils/auth'
 import { useNavigate } from 'react-router-dom'
+import { LocalStorageKeys, getFromStorage } from '../../../../utils/localStorage'
+import DescriptionDD from '../../description-dropdown/DescriptionDD'
 
 interface Props {
   onClose: () => void,
@@ -30,6 +32,11 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
   const [selectedStaff, setSelectedStaff] = useState<any>()
   const [statuses, setStatuses] = useState<{id: number, value: string, label: string, color:string}[]>([])
   const [selectedStatus, setSelectedStatus] = useState<any>()
+  const [complaintTypes, setComplaintTypes] = useState<{id: number, value: string, label: string}[]>()
+  const [selectedType, setSelectedComplaintType] = useState<any>()
+  const descriptionRef = createRef<HTMLInputElement>()
+  const descriptionContainerRef = createRef<HTMLDivElement>()
+  const [descriptionDD, setDescriptionDD] = useState(false)
   const navigate = useNavigate()
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -48,6 +55,7 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
         const payload = new FormData();
         payload.append("customer_number", customer_number);
         payload.append("complaint_number", complaint_number);
+        payload.append("complaint_type_id", selectedType.id);
         payload.append("description", description);
         payload.append("department_id", String(selectedDept.id));
         payload.append("staff_id", String(selectedStaff.id));
@@ -106,6 +114,11 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
   const handleStatusChange = (option: any) => {
     console.log("selectedStatus ===> ", selectedStatus)
     setSelectedStatus(option)
+  }
+
+  const handleComplaintTypeChange = (option: any) => {
+    console.log("selectedStatus ===> ", selectedStatus)
+    setSelectedComplaintType(option)
   }
 
   const handleRemoveAttachment = (image: { file: any; id: number }) => {
@@ -181,6 +194,7 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
   }
 
   const fetchDepartments = async () => {
+   const user = getFromStorage(LocalStorageKeys.USER)
     const response = await getAllDepartments()
     const deptCopy = response.data.data.departments.map((department: any) => {
         return {
@@ -191,7 +205,17 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
     })
     console.log("deptCopy ==> ", deptCopy)
     setDepartments([...deptCopy])
-    setSelectedDept(deptCopy[0])
+    if (user.user.user_type_id == 3)
+    {
+      setSelectedDept({
+        id: user.user.department.id,
+        value: user.user.department.name,
+        label: user.user.department.name.toUpperCase()
+      })
+    }
+    else {
+      setSelectedDept(deptCopy[0])
+    }
     fetchStaffs(deptCopy[0].id)
     console.log("departments ==> ", departments)
     return deptCopy
@@ -199,7 +223,7 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
 
   const fetchStaffs = async (department_id: any) => { 
 
-    // console.log("departments[0].id ===> ", departments[0].id)
+   const user = getFromStorage(LocalStorageKeys.USER)
     const response = await getAllDeptStaffs(department_id)
     const staffsCopy = response.data.data.staffs.map((staff: any) => {
       return {
@@ -210,9 +234,34 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
   })
   console.log("staffsCopy ==> ", staffsCopy)
   setStaffs([...staffsCopy])
-  setSelectedStaff(staffsCopy[0])
-  console.log("departments ==> ", departments)
+  if (user.user.user_type_id == 3)
+  {
+    setSelectedStaff({
+      id: user.user.id,
+      value: user.user.first_name + " " + user.user.last_name,
+      label: user.user.first_name.toUpperCase() + " " +  user.user.last_name.toUpperCase()
+    })
+  }
+  else {
+    setSelectedStaff(staffsCopy[0])
+  }
   return staffsCopy
+  }
+
+
+const fetchComplaintTypes = async () => { 
+    const response = await getComplaintTypes()
+    const typesCopy = response.data.data.complaintType.map((type: any) => {
+      return {
+          id: type.id,
+          value: type.name,
+          label: type.name.toUpperCase()
+      }
+  })
+  console.log("typesCopy ==> ", typesCopy)
+  setComplaintTypes([...typesCopy])
+  setSelectedComplaintType(typesCopy[0])
+  return typesCopy
   }
 
   const fetchStatuses = async () => {
@@ -224,6 +273,7 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
           label: status.name.toUpperCase()
       }
   })
+
   const statusModified = statusesCopy.map((status: any) => {
     switch (status.value) {
       case "Open":
@@ -257,10 +307,36 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
   return statusesCopy
   }
 
+  const handleFocus = () => {
+    descriptionRef?.current?.focus ? setDescriptionDD(true) : setDescriptionDD(false)
+  }
+
+  const handleDescriptionDDOutsideClick = (ref: any) => {
+    useEffect(() => {
+      /**
+       * Alert if clicked on outside of element
+       */
+      function handleClickOutside(event: any) {
+        if (ref.current && !ref.current.contains(event.target)) {
+          setDescriptionDD(false)
+        }
+      }
+      // Bind the event listener
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        // Unbind the event listener on clean up
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, [ref]);
+  }
+
+  handleDescriptionDDOutsideClick(descriptionContainerRef)
+
   useEffect(() => {
     fetchDepartments()
     fetchStatuses()
     generateComplaintNumber()
+    fetchComplaintTypes()
   }, [])
 
   return (
@@ -279,18 +355,26 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
           onChange={(e) => setCustomerNo(e.target.value)}
           placeholder="Please enter customer number"
         />
-        <FormInput 
-          type="text"
-          label="Description"
-          value={description}
-          name="name"
-          error={error}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Please enter complaint description"
-        />
-        {selectedDept && <DropDown label='Department' styles={FormSelectStyle} options={departments} onChange={handleDepartmentChange} defaultValue={selectedDept}/>}
-        {selectedStaff && <DropDown label='Staff' styles={FormSelectStyle} options={staffs} onChange={handleStaffChange} defaultValue={selectedStaff}/>}
+        <div ref={descriptionContainerRef} className='description-wrapper'>
+          <FormInput
+            ref={descriptionRef}
+            type="text"
+            label="Description"
+            value={description}
+            name="name"
+            error={error}
+            onChange={(e) => setDescription(e.target.value)}
+            onFocus={() => handleFocus()}
+            // onBlur={() => setDescriptionDD(false)}
+            placeholder="Please enter complaint description"
+          />
+          {descriptionDD ? <DescriptionDD setDescription={setDescription}/> : null}
+
+        </div>
+        {selectedDept && <DropDown label='Department' styles={FormSelectStyle} options={departments} onChange={handleDepartmentChange} defaultValue={selectedDept} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
+        {selectedStaff && <DropDown label='Staff' styles={FormSelectStyle} options={staffs} onChange={handleStaffChange} defaultValue={selectedStaff} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
         {selectedStatus && <DropDown label='Status' styles={StatusStyle} options={statuses} onChange={handleStatusChange} defaultValue={selectedStatus}/>}
+        {selectedType && <DropDown label='Type' styles={StatusStyle} options={complaintTypes} onChange={handleComplaintTypeChange} defaultValue={selectedType}/>}
         {/* [{value: 'open', label: 'Open', color: '#FF5733'}, {value: 'resolved', label: 'Resolved', color: '#00FF00'}, {value: 'in progress', label: 'In Progress', color: '#FFD700'}, {value: 'resolved', label: 'Resolved', color: '#00FF00'},{value: 'cancelled', label: 'Cancelled', color: '#008000'}] */}
         <div className='attachments-container'>
           <label htmlFor="attachments">Attachments</label>

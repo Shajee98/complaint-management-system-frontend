@@ -7,9 +7,10 @@ interface Props {
     options?: {id: number, value: string, label: string, color?: string}[],
     onChange?: (option: any) => void,
     styles: {},
-    label: string
+    label: string,
+    disabled?: boolean
 }
-const DropDown = ({defaultValue, options, styles, label, onChange}: Props) => {
+const DropDown = ({defaultValue, options, styles, label, onChange, disabled}: Props) => {
   const handleChange = (selectedOption: any) => {
     console.log(selectedOption)
     // loadOptions(selectedOption)
@@ -25,6 +26,7 @@ const DropDown = ({defaultValue, options, styles, label, onChange}: Props) => {
           options={options}
           defaultValue={defaultValue}
           onChange={onChange}
+          isDisabled={disabled}
           // loadOptions={loadOptions}
           // onInputChange={onChange}
         />
