@@ -6,6 +6,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import Login from "./pages/login/Login";
 import Signup from "./pages/signup/Signup";
 import UserProvider from "../context/UserProvider";
+// import "bootstrap/dist/css/bootstrap.min.css"
 
 function App() {
   return (
@@ -39,7 +40,7 @@ function App() {
                 </Route>
                 <Route path="/" element={<Navigate to="/login"/>}/>
                 <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
+                {/* <Route path="/signup" element={<Signup />} /> */}
               </Routes>
             {/* </div> */}
           {/* </div> */}

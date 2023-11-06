@@ -31,34 +31,57 @@ const Signup = () => {
   useEffect(() => {
     fetchDepartments();
     fetchUserTyes();
-    getFromStorage(LocalStorageKeys.USER) ? navigate("/complaints") : null;
+    // getFromStorage(LocalStorageKeys.USER) ? navigate("/complaints") : null;
   }, []);
 
   const fetchDepartments = async () => {
     const response = await getAllDepartments();
-    const deptCopy = response.data.data.departments.map((department: any) => {
+    const user = getFromStorage(LocalStorageKeys.USER)
+    let deptCopy = response.data.data.departments.map((department: any) => {
       return {
         id: department.id,
         value: department.name,
         label: department.name.toUpperCase(),
       };
     });
+    if (user.user.user_type_id == 1)
+    {
+      const dept = deptCopy.filter((dept: any) => dept.id == user.user.department.id)
+      console.log("dept ===> ", dept[0])
+      setSelectedDept(dept[0])
+    }
+    else
+    {
+      setSelectedDept(deptCopy[0]);
+    }
     console.log("deptCopy ==> ", deptCopy);
     setDepartments([...deptCopy]);
-    setSelectedDept(deptCopy[0]);
     console.log("departments ==> ", departments);
     return deptCopy;
   };
 
   const fetchUserTyes = async () => {
     const response = await getUserTypes();
-    const userTypeCopy = response.data.data.userTypes.map((userType: any) => {
+    const user = getFromStorage(LocalStorageKeys.USER)
+    let userTypeCopy = response.data.data.userTypes.map((userType: any) => {
       return {
         id: userType.id,
         value: userType.name,
         label: userType.name.toUpperCase(),
       };
     });
+    if (user.user.user_type_id == 2)
+    {
+      userTypeCopy = userTypeCopy.filter((user_type: any) => user_type.id != 2)
+      console.log("user types ===> ", userTypeCopy[0])
+      setSelectedUserType(userTypeCopy[0]);
+    }
+    if (user.user.user_type_id == 1)
+    {
+      userTypeCopy = userTypeCopy.filter((user_type: any) => user_type.id == 3)
+      console.log("user types ===> ", userTypeCopy[0])
+      setSelectedUserType(userTypeCopy[0]); 
+    }
     console.log("deptCopy ==> ", userTypeCopy);
     setUserTypes([...userTypeCopy]);
     setSelectedUserType(userTypeCopy[0]);
@@ -101,7 +124,7 @@ const Signup = () => {
         }).then((response) => {
           if (response.data.status.success) {
             setErrorMessage("");
-            navigate("/login");
+            // navigate("/login");
           }
         });
       }
@@ -112,7 +135,7 @@ const Signup = () => {
 
   return (
     <>
-      {getFromStorage(LocalStorageKeys.USER) && <Header />}
+      {/* {getFromStorage(LocalStorageKeys.USER) && <Header />}
       <div
         className={`${
           getFromStorage(LocalStorageKeys.USER) &&
@@ -129,15 +152,10 @@ const Signup = () => {
               ? "left-container"
               : "login-signup-container"
           }`}
-        >
-          <div className="signup-wrapper">
+        > */}
+          <div className="card-container">
             <div className="signup-header">
-              <img
-                className="logo"
-                src="../../../assets/AEG-pakistan.png"
-                alt="logo"
-              />
-              <Heading2 text="Signup" />
+              <Heading2 text="Create User" />
             </div>
             <div className="signup-form">
               <FormInput
@@ -176,37 +194,39 @@ const Signup = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Please enter password"
               />
-              <DropDown
+              {selectedDept && <DropDown
                 label="Department"
                 styles={FormSelectStyle}
                 options={departments}
                 onChange={handleDepartmentChange}
                 defaultValue={selectedDept}
-              />
-              <DropDown
+                disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 1}
+              />}
+              {selectedUserType && <DropDown
                 label="User Type"
                 styles={FormSelectStyle}
                 options={userTypes}
                 onChange={handleUserTypeChange}
                 defaultValue={selectedUserType}
-              />
+                disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 1}
+              />}
             </div>
             <div className="signup-footer">
               <PrimaryButton
-                text="Signup"
+                text="Create"
                 onClick={handleSubmit}
                 className="modal-primary"
               />
-              <p className="login-text">
+              {/* <p className="login-text">
                 Already have an account?{" "}
                 <span className="login-link" onClick={() => navigate("/login")}>
                   Login
                 </span>
-              </p>
+              </p> */}
             </div>
           </div>
-        </div>
-      </div>
+        {/* </div>
+      </div> */}
     </>
   );
 };

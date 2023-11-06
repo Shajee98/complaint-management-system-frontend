@@ -104,7 +104,7 @@ const Login = () => {
                 onClick={handleSubmit}
                 className="modal-primary"
               />
-              <p className="signup-text">
+              {/* <p className="signup-text">
                 Don't have an account?{" "}
                 <span
                   className="signup-link"
@@ -112,7 +112,7 @@ const Login = () => {
                 >
                   Signup
                 </span>
-              </p>
+              </p> */}
             </div>
           </div>
         </div>

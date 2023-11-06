@@ -45,9 +45,7 @@ export const postRequestFormData = async (url: string, data?: any, options?: any
     {
       
       console.log("data ===> ", data)
-      const response = await axiosClientFormData.post(url, data, {
-        headers: options
-      });
+      const response = await axiosClientFormData.post(url, data, options);
       console.log('response from post request...', response)
       return response;      
     }

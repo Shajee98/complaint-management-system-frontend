@@ -1,4 +1,4 @@
-.navbar {
+.navbar_ {
     width: 15vw;
     margin-top: 10px;
     box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
@@ -7,7 +7,7 @@
     justify-content: flex-start;
 }
 
-.nav-item {
+.nav-item_ {
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -28,7 +28,7 @@
     }
 }
 
-.nav-link {
+.nav-link_ {
     font-size: 16px;
     font-weight: 700;
 }

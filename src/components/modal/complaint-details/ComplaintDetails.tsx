@@ -10,7 +10,6 @@ import SecondaryButton from '../../secondary-button/SecondaryButton'
 import { getAllDepartments, getAllDeptStaffs, getAllStatuses, getComplaintById, getComplaintTypes, updateComplaint } from './services/ComplaintDetails'
 import { API_URL } from '../../../../utils/apiConfig'
 import { LocalStorageKeys, getFromStorage } from '../../../../utils/localStorage'
-import { postRequestFormData } from '../../../../utils/auth'
 import DescriptionDD from '../../description-dropdown/DescriptionDD'
 
 interface Props {

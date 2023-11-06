@@ -23,7 +23,7 @@ const Header = () => {
       <div className='profile-avatar' onClick={() => setVisible(!visible)}>
         <BsFillPersonFill />
         {/* {visible ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />} */}
-        <button className='logout-button' onClick={logout}><FiLogOut /></button>
+        <FiLogOut className='logout-button' onClick={logout}/>
       </div>
     </div>
   )
