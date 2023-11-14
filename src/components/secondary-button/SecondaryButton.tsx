@@ -4,11 +4,12 @@ interface Props {
     onClick?: () => void
     className: string
     htmlFor?: string
+    toggle?: boolean
 }
 
-const SecondaryButton = ({text, onClick, className, htmlFor}: Props) => {
+const SecondaryButton = ({text, onClick, className, htmlFor, toggle}: Props) => {
   return (
-    <label htmlFor={htmlFor} className={`secondary ${className}`} onClick={onClick}>{text}</label>
+    <label htmlFor={htmlFor} className={`${toggle ? 'secondary-toggle' : 'secondary'} ${className}`} onClick={onClick}>{text}</label>
   )
 }
 

@@ -9,3 +9,7 @@ export const getAllDepartments = () => {
 export const getAllComplaints = (data: {offset: number, complaint_type_id: number, department_id: number, complaint_status_id: number}) => {
     return catchAxiosError(getRequest(`${API_URL}/complaints/get/all?offset=${data.offset}&department_id=${data.department_id}&complaint_type_id=${data.complaint_type_id}&complaint_status_id=${data.complaint_status_id}`))
 }
+
+export const getWhatsappResponsesCount = () => {
+  return catchAxiosError(getRequest(`${API_URL}/whatsapp/YesOrNoCount`))
+}

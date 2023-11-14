@@ -1,5 +1,4 @@
 import { HiPencil } from 'react-icons/hi'
-import './Settings.scss'
 import PrimaryButton from '../../components/primary-button/PrimaryButton'
 import SecondaryButton from '../../components/secondary-button/SecondaryButton'
 import Heading2 from '../../components/typography/heading-2/Heading2'
@@ -7,13 +6,39 @@ import { LocalStorageKeys, getFromStorage } from '../../../utils/localStorage'
 import Header from '../../components/header/Header'
 import Navbar from '../../components/navbar/Navbar'
 import { ProgressBar } from 'react-bootstrap'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { postRequestFormData } from '../../../utils/auth'
+import { getWhatsappMessageFormat, updateWhatsappMessageFormat } from './service/Settings'
 import Signup from '../signup/Signup'
+import './Settings.scss'
 
 const Settings = () => {
   const [progress, setProgress] = useState<any>()
   const [files, setFiles] = useState<any>()
+  const [message, setMessage] = useState("")
+  const [editMessage, setEditMessage] = useState(true)
+
+  const fetchFormat = async () => {
+    try {
+      const text = await getWhatsappMessageFormat()
+      setMessage(text.data.data[0].message)
+    } catch (error) {
+      console.error("error ==> ", error)
+    }
+  }
+
+  const updateMessageFormat = async () => {
+    try {
+      await updateWhatsappMessageFormat(message)
+      fetchFormat()
+    } catch (error) {
+      console.error("error ==> ", error)
+    }
+  }
+
+  useEffect(() => {
+    fetchFormat()
+  }, [])
   const submitHandler = async () => {
     try {
       const options = {
@@ -72,16 +97,16 @@ const Settings = () => {
         {progress && <ProgressBar now={progress} label={`${progress}%`} color='blue' />}
         </div>
         </div>
-        <PrimaryButton className={`${files != undefined ? '' : 'disabled'} primary-left-aligned`} text='Send' onClick={submitHandler}/>
+        <PrimaryButton className={`${files != undefined ? '' : 'disabled'} primary-left-aligned`} text='Save' onClick={submitHandler}/>
       </div>
       <div className='card-container'>
         <Heading2 className='heading2-right-aligned' text='Whatsapp Message Format' />
         <div className='card-body'>
             <div className='format-container'>
-                <input type='text' disabled className='whatsapp-format' value={"How was the service you availed at AEG Travels? How was the service you availed at AEG Travels? How was the service you availed at AEG Travels?"}/>
-                <HiPencil className="edit-icon" onClick={() => { console.log("Edited")}}/>
+                <input type='text' disabled={editMessage} className='whatsapp-format' value={message} onChange={(e) => setMessage(e.target.value)}/>
+                <HiPencil className="edit-icon" onClick={() => setEditMessage(!editMessage)}/>
             </div>
-            <PrimaryButton text='Update' className='disabled primary-left-aligned' />
+            <PrimaryButton text='Update' className='primary-left-aligned' onClick={updateMessageFormat} />
         </div>
       </div>
       </div>

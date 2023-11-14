@@ -386,7 +386,7 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
         <div className='attachments-container'>
           <label htmlFor="attachments">Attachments</label>
           <input type='file' className='attachment-selector' id="attachments" onChange={(e) => handleAttachments(e)}/>
-          <SecondaryButton text='Upload Attachments' className='file-uploader' htmlFor='attachments' />
+          <SecondaryButton text='Upload Attachments' className='file-uploader' htmlFor='attachments' toggle={false}/>
           <div className='attachments-list'>
           {previews.map((preview, index) => (
               <div key={index} className='attachment-container'>

@@ -1,7 +1,8 @@
 import DropDown from "../../components/drop-down/DropDown";
-import { AiOutlineSearch } from "react-icons/ai";
+import { AiOutlinePlus, AiOutlineSearch } from "react-icons/ai";
 import { BsEyeFill } from "react-icons/bs";
 import { FaCommentDots } from "react-icons/fa";
+import { GrAdd } from 'react-icons/gr'
 import "./Complaints.scss";
 import {
   Chart as ChartJS,
@@ -15,7 +16,7 @@ import {
   ArcElement,
   Filler,
 } from "chart.js";
-import { Line } from "react-chartjs-2";
+import { Doughnut, Line } from "react-chartjs-2";
 import { useEffect, useState } from "react";
 import CreateComplaint from "../../components/modal/create-complaint/CreateComplaint";
 import SecondaryButton from "../../components/secondary-button/SecondaryButton";
@@ -26,8 +27,9 @@ import Comments from "../../components/modal/comments/Comments";
 import { LocalStorageKeys, getFromStorage } from "../../../utils/localStorage";
 import Header from "../../components/header/Header";
 import Navbar from "../../components/navbar/Navbar";
-import { getAllComplaints, getAllDepartments } from "./service/Complaint";
+import { getAllComplaints, getAllDepartments, getWhatsappResponsesCount } from "./service/Complaint";
 import { getAllStatuses } from "../../components/modal/create-complaint/services/CreateComplaint";
+import Heading2 from "../../components/typography/heading-2/Heading2";
 
 ChartJS.register(
   CategoryScale,
@@ -58,6 +60,22 @@ const Complaints = () => {
   const [complaintType, setComplaintType] = useState(1)
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const [whatsappResponses, setWhatsappResponses] = useState<any>({
+    labels: [
+      'Yes',
+      'No',
+    ],
+    datasets: [{
+      label: 'Total: ',
+      data: [0, 0],
+      backgroundColor: [
+        '#F958C9',
+        '#55C5D1',
+
+      ],
+      hoverOffset: 4
+    }]
+  })
 
   // useEffect(() => {
   //   const user = getFromStorage(LocalStorageKeys.USER)
@@ -247,8 +265,33 @@ const Complaints = () => {
   useEffect(() => {
     fetchDepartments()
     fetchStatuses()
+    fetchWhatsappResponsesCount()
     // fetchComplaints(selectedDept?.id, 0)
   }, [])
+
+  const fetchWhatsappResponsesCount = async () => {
+    try {
+      const whatsappResponsesCounts = await getWhatsappResponsesCount()
+      setWhatsappResponses({
+        labels: [
+          'Yes',
+          'No',
+        ],
+        datasets: [
+          {
+            label: 'Total: ',
+            data: [whatsappResponsesCounts.data.data.responses[0].positive, whatsappResponsesCounts.data.data.responses[0].negetive],
+            backgroundColor: [
+              '#55C5D1',
+              '#F16222',
+            ],
+            hoverOffset: 4
+          }]
+      })
+    } catch (error) {
+      console.log("error ===> ", error)
+    }
+  }
 
   const handleDepartmentChange = (option: any) => {
     console.log("selectedDept ===> ", option)
@@ -349,7 +392,19 @@ const Complaints = () => {
               />
             )}
             <div className="upper-half">
-              <Heading1 text="Complaints Management" />
+                <Heading1 text="Complaints Management" />
+              <div className="type-and-add">
+                <div className="complaint-toggle-container">
+                  <SecondaryButton toggle={true} className={`complaint-toggle ${complaintType == 1 ? 'active-tab' : 'inactive'}`} text="AEG" onClick={() => toggleComplaintType(1)}/>
+                  <SecondaryButton toggle={true} className={`complaint-toggle ${complaintType == 2 ? 'active-tab' : 'inactive'}`} text="TicketG" onClick={() => toggleComplaintType(2)}/>
+                </div>
+                <button
+                  className="add-complaint"
+                  onClick={() => setShowAddComplaintModal(true)}
+                  >
+                  <AiOutlinePlus color="#fff"/>
+                </button>
+              </div>
               <div className="filterandsearch">
                 <div className="search-container">
                   <input
@@ -376,7 +431,7 @@ const Complaints = () => {
                   options={statuses}
                 />}
               </div>
-              <div className="complaint-toggle-container">
+              {/* <div className="complaint-toggle-container">
                 <SecondaryButton className="complaint-toggle" text="AEG" onClick={() => toggleComplaintType(1)}/>
                 <SecondaryButton className="complaint-toggle" text="TicketG" onClick={() => toggleComplaintType(2)}/>
               </div>
@@ -384,7 +439,7 @@ const Complaints = () => {
                 className="secondary-left-aligned"
                 text="Add Complaint"
                 onClick={() => setShowAddComplaintModal(true)}
-              />
+              /> */}
               <div className="date-filter-container">
                 <div className="date-filter-wrapper">
                   <div className="individual-date-filter">
@@ -425,8 +480,8 @@ const Complaints = () => {
                       }}
                     />
                   </div>
-                  <SecondaryButton text="Clear" onClick={clearDate} className="date-filter-button"/>
-                  <SecondaryButton text="Search" onClick={searchHandler} className="date-filter-button"/>
+                  <SecondaryButton text="Clear" onClick={clearDate} className="date-filter-button active-tab"/>
+                  <SecondaryButton text="Search" onClick={searchHandler} className="date-filter-button active-tab"/>
                 </div>
               </div>
             </div>
@@ -519,6 +574,29 @@ const Complaints = () => {
                 },
               }}
             />
+            <div className="chart-container">
+              <Heading2 text="Whatsapp Poll Responses"/>
+              <Doughnut 
+                data={whatsappResponses}
+                options={{
+                  cutout: "80%",
+                  responsive: true,
+                  maintainAspectRatio: true,
+                  aspectRatio: 1.4,
+                  plugins: {
+                    legend: {
+                      position: "bottom",
+                      labels: {
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        color : 'black',
+                        padding : 25
+                      }
+                    }
+                  }
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
