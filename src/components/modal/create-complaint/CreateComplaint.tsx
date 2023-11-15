@@ -260,7 +260,8 @@ const fetchComplaintTypes = async () => {
   })
   console.log("typesCopy ==> ", typesCopy)
   setComplaintTypes([...typesCopy])
-  setSelectedComplaintType(typesCopy[0])
+  const type_id = localStorage.getItem("complaint_type")
+  setSelectedComplaintType(type_id == "1" ? typesCopy[0] : typesCopy[1])
   return typesCopy
   }
 
@@ -374,7 +375,7 @@ const fetchComplaintTypes = async () => {
         {selectedDept && <DropDown label='Department' styles={FormSelectStyle} options={departments} onChange={handleDepartmentChange} defaultValue={selectedDept} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
         {selectedStaff && <DropDown label='Staff' styles={FormSelectStyle} options={staffs} onChange={handleStaffChange} defaultValue={selectedStaff} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
         {selectedStatus && <DropDown label='Status' styles={StatusStyle} options={statuses} onChange={handleStatusChange} defaultValue={selectedStatus}/>}
-        {selectedType && <DropDown label='Type' styles={StatusStyle} options={complaintTypes} onChange={handleComplaintTypeChange} defaultValue={selectedType}/>}
+        {selectedType && <DropDown label='Type' styles={StatusStyle} disabled={true} options={complaintTypes} onChange={handleComplaintTypeChange} defaultValue={selectedType}/>}
         {/* [{value: 'open', label: 'Open', color: '#FF5733'}, {value: 'resolved', label: 'Resolved', color: '#00FF00'}, {value: 'in progress', label: 'In Progress', color: '#FFD700'}, {value: 'resolved', label: 'Resolved', color: '#00FF00'},{value: 'cancelled', label: 'Cancelled', color: '#008000'}] */}
         <div className='attachments-container'>
           <label htmlFor="attachments">Attachments</label>

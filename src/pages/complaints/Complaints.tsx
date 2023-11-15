@@ -316,6 +316,7 @@ const Complaints = () => {
 
   const toggleComplaintType = (type_id: number) => {
     setComplaintType(type_id)
+    localStorage.setItem("complaint_type", String(type_id))
   }
 
   const reportedOn = (dateString: any) => {
