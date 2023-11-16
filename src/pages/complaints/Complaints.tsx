@@ -27,7 +27,7 @@ import Comments from "../../components/modal/comments/Comments";
 import { LocalStorageKeys, getFromStorage } from "../../../utils/localStorage";
 import Header from "../../components/header/Header";
 import Navbar from "../../components/navbar/Navbar";
-import { getAllComplaints, getAllDepartments, getWhatsappResponsesCount } from "./service/Complaint";
+import { fetchComplaintsByMonth, getAllComplaints, getAllDepartments, getWhatsappResponsesCount } from "./service/Complaint";
 import { getAllStatuses } from "../../components/modal/create-complaint/services/CreateComplaint";
 import Heading2 from "../../components/typography/heading-2/Heading2";
 
@@ -42,6 +42,23 @@ ChartJS.register(
   ArcElement,
   Filler
 );
+
+let graph: any[] = [];
+
+const getComplaintsByMonth = (complaintsByDate: any[]) => {
+  let graphData = [{ month: 'Jan', count: 0 }, { month: 'Feb', count: 0 }, { month: 'Mar', count: 0 }, { month: 'Apr', count: 0 }, { month: 'May', count: 0 }, { month: 'Jun', count: 0 }, { month: 'Jul', count: 0 }, { month: 'Aug', count: 0 }, { month: 'Sep', count: 0 }, { month: 'Oct', count: 0 }, { month: 'Nov', count: 0 }, { month: 'Dec', count: 0 }];
+  for (let i = 0; i < complaintsByDate.length; i++) {
+    console.log("complaintsByDate[i] ===> ", complaintsByDate[i])
+    const date = new Date(complaintsByDate[i]?.created_at)
+    const month = date.toLocaleString('default', { month: 'short' });
+    const index = graphData.findIndex((data) => data.month === month);
+    
+    graphData[index]['count'] += Number(complaintsByDate[i]?.statusCount)
+  }
+  graph = [...graphData]
+  console.log("graphData ===> ", graph)
+  // return graphData
+}
 
 const Complaints = () => {
   const [isSuperAdmin, setIsSuperAdmin] = useState(true)
@@ -77,6 +94,16 @@ const Complaints = () => {
     }]
   })
 
+  const [complaintsByDate, setComplaintsByDate] = useState([]);
+
+  const fetchGraphDetails = async () => {
+      const graphDetails = await fetchComplaintsByMonth(1)
+      setComplaintsByDate(graphDetails.data.data.complaints)
+  }
+
+  useEffect(() => {
+      fetchGraphDetails()
+  }, [complaints])
   // useEffect(() => {
   //   const user = getFromStorage(LocalStorageKeys.USER)
   //   if (user?.user?.user_type_id == 1)
@@ -336,22 +363,26 @@ const Complaints = () => {
     const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}`;
     return formattedDate
   }
-  let graph: any[] = [];
-  let graphData = [
-    { month: "Jan", count: 0 },
-    { month: "Feb", count: 0 },
-    { month: "Mar", count: 0 },
-    { month: "Apr", count: 0 },
-    { month: "May", count: 0 },
-    { month: "Jun", count: 0 },
-    { month: "Jul", count: 0 },
-    { month: "Aug", count: 0 },
-    { month: "Sep", count: 0 },
-    { month: "Oct", count: 0 },
-    { month: "Nov", count: 0 },
-    { month: "Dec", count: 0 },
-  ];
-  graph = [...graphData];
+
+useEffect(() => {
+  getComplaintsByMonth(complaintsByDate)
+}, [complaintsByDate])
+
+  // let graphData = [
+  //   { month: "Jan", count: 0 },
+  //   { month: "Feb", count: 0 },
+  //   { month: "Mar", count: 0 },
+  //   { month: "Apr", count: 0 },
+  //   { month: "May", count: 0 },
+  //   { month: "Jun", count: 0 },
+  //   { month: "Jul", count: 0 },
+  //   { month: "Aug", count: 0 },
+  //   { month: "Sep", count: 0 },
+  //   { month: "Oct", count: 0 },
+  //   { month: "Nov", count: 0 },
+  //   { month: "Dec", count: 0 },
+  // ];
+  // graph = [...graphData];
   return (
     <>
       {getFromStorage(LocalStorageKeys.USER) && <Header />}
@@ -528,7 +559,9 @@ const Complaints = () => {
                   {
                     label: "Complaints",
 
-                    data: [20, 40, 60, 100, 90, 40, 10],
+                    data: graph.map((monthData) => {
+                      return monthData?.count
+                  }),
                     borderColor: "rgb(75, 192, 192)",
                     tension: 0.2,
                     pointStyle: "circle",

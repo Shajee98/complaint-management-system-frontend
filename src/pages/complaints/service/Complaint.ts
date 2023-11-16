@@ -13,3 +13,7 @@ export const getAllComplaints = (data: {offset: number, complaint_type_id: numbe
 export const getWhatsappResponsesCount = () => {
   return catchAxiosError(getRequest(`${API_URL}/whatsapp/YesOrNoCount`))
 }
+
+export const fetchComplaintsByMonth = (status_id: number) => {
+  return catchAxiosError(getRequest(`${API_URL}/complaints/month/get/all?status_id=${status_id}`))
+}

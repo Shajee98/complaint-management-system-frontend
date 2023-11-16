@@ -207,14 +207,14 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
     setDepartments([...deptCopy])
     if (user.user.user_type_id == 3)
     {
-      setSelectedDept({
-        id: user.user.department.id,
-        value: user.user.department.name,
-        label: user.user.department.name.toUpperCase()
-      })
+      // setSelectedDept({
+      //   id: user.user.department.id,
+      //   value: user.user.department.name,
+      //   label: user.user.department.name.toUpperCase()
+      // })
     }
     else {
-      setSelectedDept(deptCopy[0])
+      // setSelectedDept(deptCopy[0])
     }
     fetchStaffs(deptCopy[0].id)
     console.log("departments ==> ", departments)
@@ -236,14 +236,14 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
   setStaffs([...staffsCopy])
   if (user.user.user_type_id == 3)
   {
-    setSelectedStaff({
-      id: user.user.id,
-      value: user.user.first_name + " " + user.user.last_name,
-      label: user.user.first_name.toUpperCase() + " " +  user.user.last_name.toUpperCase()
-    })
+    // setSelectedStaff({
+    //   id: user.user.id,
+    //   value: user.user.first_name + " " + user.user.last_name,
+    //   label: user.user.first_name.toUpperCase() + " " +  user.user.last_name.toUpperCase()
+    // })
   }
   else {
-    setSelectedStaff(staffsCopy[0])
+    // setSelectedStaff(staffsCopy[0])
   }
   return staffsCopy
   }
@@ -372,8 +372,8 @@ const fetchComplaintTypes = async () => {
           {descriptionDD ? <DescriptionDD setDescription={setDescription}/> : null}
 
         </div>
-        {selectedDept && <DropDown label='Department' styles={FormSelectStyle} options={departments} onChange={handleDepartmentChange} defaultValue={selectedDept} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
-        {selectedStaff && <DropDown label='Staff' styles={FormSelectStyle} options={staffs} onChange={handleStaffChange} defaultValue={selectedStaff} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
+        {<DropDown label='Department' styles={FormSelectStyle} options={departments} onChange={handleDepartmentChange} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
+        {<DropDown label='Staff' styles={FormSelectStyle} options={staffs} onChange={handleStaffChange} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
         {selectedStatus && <DropDown label='Status' styles={StatusStyle} options={statuses} onChange={handleStatusChange} defaultValue={selectedStatus}/>}
         {selectedType && <DropDown label='Type' styles={StatusStyle} disabled={true} options={complaintTypes} onChange={handleComplaintTypeChange} defaultValue={selectedType}/>}
         {/* [{value: 'open', label: 'Open', color: '#FF5733'}, {value: 'resolved', label: 'Resolved', color: '#00FF00'}, {value: 'in progress', label: 'In Progress', color: '#FFD700'}, {value: 'resolved', label: 'Resolved', color: '#00FF00'},{value: 'cancelled', label: 'Cancelled', color: '#008000'}] */}
