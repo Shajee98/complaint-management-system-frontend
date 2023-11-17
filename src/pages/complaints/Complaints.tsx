@@ -30,6 +30,7 @@ import Navbar from "../../components/navbar/Navbar";
 import { fetchComplaintsByMonth, getAllComplaints, getAllDepartments, getWhatsappResponsesCount } from "./service/Complaint";
 import { getAllStatuses } from "../../components/modal/create-complaint/services/CreateComplaint";
 import Heading2 from "../../components/typography/heading-2/Heading2";
+import ReactPaginate from "react-paginate";
 
 ChartJS.register(
   CategoryScale,
@@ -53,7 +54,7 @@ const getComplaintsByMonth = (complaintsByDate: any[]) => {
     const month = date.toLocaleString('default', { month: 'short' });
     const index = graphData.findIndex((data) => data.month === month);
     
-    graphData[index]['count'] += Number(complaintsByDate[i]?.statusCount)
+    graphData[index]['count'] += Number(complaintsByDate[i]?.count)
   }
   graph = [...graphData]
   console.log("graphData ===> ", graph)
@@ -77,6 +78,10 @@ const Complaints = () => {
   const [complaintType, setComplaintType] = useState(1)
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const [pageNumber, setPageNumber] = useState(0);
+
+  const usersPerPage = 10;
+  const pagesVisited = pageNumber * usersPerPage;
   const [whatsappResponses, setWhatsappResponses] = useState<any>({
     labels: [
       'Yes',
@@ -95,6 +100,14 @@ const Complaints = () => {
   })
 
   const [complaintsByDate, setComplaintsByDate] = useState([]);
+
+  const pageCount = Math.ceil(complaints.length / usersPerPage);
+
+  const changePage = (selectedItem: {
+    selected: number;
+}) => {
+    setPageNumber(selectedItem.selected);
+  };
 
   const fetchGraphDetails = async () => {
       const graphDetails = await fetchComplaintsByMonth(1)
@@ -428,7 +441,7 @@ useEffect(() => {
               <div className="type-and-add">
                 <div className="complaint-toggle-container">
                   <SecondaryButton toggle={true} className={`complaint-toggle ${complaintType == 1 ? 'active-tab' : 'inactive'}`} text="AEG" onClick={() => toggleComplaintType(1)}/>
-                  <SecondaryButton toggle={true} className={`complaint-toggle ${complaintType == 2 ? 'active-tab' : 'inactive'}`} text="TicketG" onClick={() => toggleComplaintType(2)}/>
+                  <SecondaryButton toggle={true} className={`complaint-toggle ${complaintType == 2 ? 'active-tab' : 'inactive'}`} text="TicketJee" onClick={() => toggleComplaintType(2)}/>
                 </div>
                 <button
                   className="add-complaint"
@@ -527,7 +540,9 @@ useEffect(() => {
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
-              {complaints.map((complaint) => (
+              {complaints
+              .slice(pagesVisited, pagesVisited + usersPerPage)
+              .map((complaint) => (
               <tr className="table-row">
                 <td>{complaint.id}</td>
                 <td>{complaint.customerNumber}</td>
@@ -550,6 +565,27 @@ useEffect(() => {
               </tr>
                   ))}
             </table>
+            <ReactPaginate
+              previousLabel={"Previous"}
+              nextLabel={"Next"}
+              pageCount={pageCount}
+              onPageChange={changePage}
+              containerClassName={"paginationBttns"}
+              previousLinkClassName={"previousBttn"}
+              nextLinkClassName={"nextBttn"}
+              disabledClassName={"paginationDisabled"}
+              activeClassName={"paginationActive"}
+            />
+            <div className="graph-chart-container">
+            <div className="graph-container">
+            <Heading2 text="Complaints Stats" className="left-aligned-heading"/>
+            {/* {selectedStatus && <DropDown
+                  label="Status"
+                  defaultValue={selectedStatus}
+                  styles={StatusStyle}
+                  onChange={handleStatusChange}
+                  options={statuses}
+                />} */}
             <Line
               data={{
                 labels: graph.map((monthData) => {
@@ -608,6 +644,7 @@ useEffect(() => {
                 },
               }}
             />
+            </div>
             <div className="chart-container">
               <Heading2 text="Whatsapp Poll Responses"/>
               <Doughnut 
@@ -630,6 +667,7 @@ useEffect(() => {
                   }
                 }}
               />
+            </div>
             </div>
           </div>
         </div>

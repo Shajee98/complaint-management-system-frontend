@@ -185,6 +185,58 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    width: 30%;
-    height: 30%;
+    width: 35%;
+    height: 35%;
 }
+
+.graph-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 50%;
+    height: 50%;
+}
+
+.graph-chart-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.left-aligned-heading {
+    align-self: flex-start;
+}
+
+.paginationBttns {
+    width: auto;
+    height: 20px;
+    list-style: none;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .paginationBttns a {
+    padding: 5px 10px 5px 10px;
+    margin: 8px;
+    border-radius: 5px;
+    border: 1px solid #3373B1;
+    color: #3373B1;
+    cursor: pointer;
+  }
+  
+  .paginationBttns a:hover {
+    color: white;
+    background-color: #3373B1;
+  }
+  
+  .paginationActive a {
+    color: white;
+    background-color: #3373B1;
+  }
+  
+  .paginationDisabled a {
+    color: white;
+    background-color: grey;
+    cursor: not-allowed;
+  }
