@@ -70,7 +70,7 @@ const Complaints = () => {
   const [showAddComplaintModal, setShowAddComplaintModal] = useState(false);
   const [showComplaintDetailModal, setShowComplaintDetailModal] =
     useState(false);
-  const [departments, setDepartments] = useState<{id: number, value: string, label: string}[]>([])
+  const [departments, setDepartments] = useState<{id: number | null, value: string, label: string}[]>([])
   const [selectedDept, setSelectedDept] = useState<any>()
   const [statuses, setStatuses] = useState<{id: number, value: string, label: string, color:string}[]>([])
   const [selectedStatus, setSelectedStatus] = useState<any>()
@@ -166,8 +166,9 @@ const Complaints = () => {
     setComplaints(copyComplaints);
   };
 
-  const fetchComplaints = async (department_id: number, offset: number) => {
+  const fetchComplaints = async (department_id: number | null, offset: number) => {
     try {
+        console.log("department_id =====? ", department_id)
         const response = await getAllComplaints({department_id: department_id, complaint_type_id: complaintType, complaint_status_id: selectedStatus.id, offset: offset})
         setComplaints(response.data.data.complaints.rows)
         setComplaintsCopy(response.data.data.complaints.rows)
@@ -182,13 +183,16 @@ const Complaints = () => {
   const fetchDepartments = async () => {
     try {
         const response = await getAllDepartments()
-        const deptCopy = response.data.data.departments.map((department: any) => {
+        let deptCopy: any[] = [{id: 0, value: 'none', label: 'None'}]
+        const deptRetrieved = response.data.data.departments.map((department: any) => {
             return {
                 id: department.id,
                 value: department.name,
                 label: department.name.toLowerCase()
             }
         })
+        deptCopy = deptCopy.concat(deptRetrieved)
+        deptCopy = deptCopy.concat([{id: 4, value: 'all', label: 'All'}])
         console.log("deptCopy ==> ", deptCopy)
         setDepartments([...deptCopy])
         const user = getFromStorage(LocalStorageKeys.USER)
@@ -204,8 +208,8 @@ const Complaints = () => {
         }
         else if (user?.user?.user_type_id == 2)
         {
-          setSelectedDept(deptCopy[0])
-          fetchComplaints(deptCopy[0].id, 0)
+          setSelectedDept(deptCopy[4])
+          fetchComplaints(deptCopy[4].id, 0)
           setIsSuperAdmin(true)
         }
         console.log("departments ==> ", departments)
@@ -463,6 +467,7 @@ useEffect(() => {
                 </div>
                 {isSuperAdmin && selectedDept && <DropDown
                   label="Departments"
+                  value={selectedDept}
                   defaultValue={selectedDept}
                   styles={FilterSelectStyle}
                   onChange={handleDepartmentChange}
@@ -470,6 +475,7 @@ useEffect(() => {
                 />}
                 {selectedStatus && <DropDown
                   label="Status"
+                  value={selectedStatus}
                   defaultValue={selectedStatus}
                   styles={StatusStyle}
                   onChange={handleStatusChange}
@@ -525,8 +531,8 @@ useEffect(() => {
                       }}
                     />
                   </div>
-                  <SecondaryButton text="Clear" onClick={clearDate} className="date-filter-button active-tab"/>
-                  <SecondaryButton text="Search" onClick={searchHandler} className="date-filter-button active-tab"/>
+                  <SecondaryButton text="Search" onClick={searchHandler} className="date-search-button"/>
+                  <SecondaryButton text="Clear" onClick={clearDate} className="date-clear-button"/>
                 </div>
               </div>
             </div>
@@ -547,8 +553,8 @@ useEffect(() => {
                 <td>{complaint.id}</td>
                 <td>{complaint.customerNumber}</td>
                 <td>{reportedOn(complaint.createdAt)}</td>
-                <td>{complaint.user.first_name + " " + complaint.user.last_name}</td>
-                <td>{complaint.department.name}</td>
+                <td>{complaint.user ? complaint.user.first_name + " " + complaint.user.last_name : '-'}</td>
+                <td>{complaint.department ? complaint.department.name : '-'}</td>
                 <td>{complaint.complaint_status.name}</td>
                 <td className="action-cell">
                   <BsEyeFill

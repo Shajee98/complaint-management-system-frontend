@@ -27,9 +27,9 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
   const [attachments, setAttachments] = useState<any[]>([])
   const [previews, setPreviews] = useState<any[]>([])
   const [departments, setDepartments] = useState<{id: number, value: string, label: string}[]>([])
-  const [selectedDept, setSelectedDept] = useState<any>()
+  const [selectedDept, setSelectedDept] = useState<any>(null)
   const [staffs, setStaffs] = useState<{id: number, value: string, label: string}[]>([])
-  const [selectedStaff, setSelectedStaff] = useState<any>()
+  const [selectedStaff, setSelectedStaff] = useState<any>(null)
   const [statuses, setStatuses] = useState<{id: number, value: string, label: string, color:string}[]>([])
   const [selectedStatus, setSelectedStatus] = useState<any>()
   const [complaintTypes, setComplaintTypes] = useState<{id: number, value: string, label: string}[]>()
@@ -43,7 +43,7 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
     console.log("Attachments before submit", attachments)
     try {
       e.preventDefault()
-      if (!customer_number.trim() || !description.trim()) {
+      if (!customer_number.trim()) {
         setError(true)
         return
       } else {
@@ -57,8 +57,8 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
         payload.append("complaint_number", complaint_number);
         payload.append("complaint_type_id", selectedType.id);
         payload.append("description", description);
-        payload.append("department_id", String(selectedDept.id));
-        payload.append("staff_id", String(selectedStaff.id));
+        payload.append("department_id", selectedDept !== null ? String(selectedDept.id) : '');
+        payload.append("staff_id", selectedStaff !== null ? String(selectedStaff.id) : '');
         for (let i = 0; i < attachments.length; i++) {
           console.log("attachments[i].blob", attachments[i].blob) 
           payload.append("attachments", attachments[i]?.blob);
@@ -363,7 +363,6 @@ const fetchComplaintTypes = async () => {
             label="Description"
             value={description}
             name="name"
-            error={error}
             onChange={(e) => setDescription(e.target.value)}
             onFocus={() => handleFocus()}
             // onBlur={() => setDescriptionDD(false)}
@@ -372,10 +371,10 @@ const fetchComplaintTypes = async () => {
           {descriptionDD ? <DescriptionDD setDescription={setDescription}/> : null}
 
         </div>
-        {<DropDown label='Department' styles={FormSelectStyle} options={departments} onChange={handleDepartmentChange} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
-        {<DropDown label='Staff' styles={FormSelectStyle} options={staffs} onChange={handleStaffChange} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
-        {selectedStatus && <DropDown label='Status' styles={StatusStyle} options={statuses} onChange={handleStatusChange} defaultValue={selectedStatus}/>}
-        {selectedType && <DropDown label='Type' styles={StatusStyle} disabled={true} options={complaintTypes} onChange={handleComplaintTypeChange} defaultValue={selectedType}/>}
+        {<DropDown value={selectedDept} label='Department' styles={FormSelectStyle} options={departments} onChange={handleDepartmentChange} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
+        {<DropDown value={selectedStaff} label='Staff' styles={FormSelectStyle} options={staffs} onChange={handleStaffChange} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
+        {selectedStatus && <DropDown value={selectedStatus} label='Status' styles={StatusStyle} options={statuses} onChange={handleStatusChange} defaultValue={selectedStatus}/>}
+        {selectedType && <DropDown value={selectedType} label='Type' styles={StatusStyle} disabled={true} options={complaintTypes} onChange={handleComplaintTypeChange} defaultValue={selectedType}/>}
         {/* [{value: 'open', label: 'Open', color: '#FF5733'}, {value: 'resolved', label: 'Resolved', color: '#00FF00'}, {value: 'in progress', label: 'In Progress', color: '#FFD700'}, {value: 'resolved', label: 'Resolved', color: '#00FF00'},{value: 'cancelled', label: 'Cancelled', color: '#008000'}] */}
         <div className='attachments-container'>
           <label htmlFor="attachments">Attachments</label>

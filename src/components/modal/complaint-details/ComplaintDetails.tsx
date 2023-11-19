@@ -25,7 +25,7 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
   const [attachments, setAttachments] = useState<any[]>([])
   const [previews, setPreviews] = useState<any[]>([])
   const [departments, setDepartments] = useState<{id: number, value: string, label: string}[]>([])
-  const [selectedDept, setSelectedDept] = useState<any>()
+  const [selectedDept, setSelectedDept] = useState<any>({})
   const [staffs, setStaffs] = useState<{id: number, value: string, label: string}[]>([])
   const [selectedStaff, setSelectedStaff] = useState<any>()
   const [statuses, setStatuses] = useState<{id: number, value: string, label: string, color:string}[]>([])
@@ -159,8 +159,9 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
   })
   console.log("staffsCopy ==> ", staffsCopy)
   setStaffs([...staffsCopy])
-  setSelectedStaff(staffsCopy[0])
-  console.log("departments ==> ", departments)
+  // setSelectedStaff(staffsCopy[0])
+  console.log("selectedDept ====> ", selectedDept)
+  console.log("selectedStaff ====> ", selectedStaff)
   return staffsCopy
   }
 
@@ -224,7 +225,7 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
 
   const fetchComplaintDetails = async () => {
     try {
-      const complaint = await getComplaintById(complaintId).then((response) => {
+      await getComplaintById(complaintId).then((response) => {
         if (response.data.status.success)
         {
           console.log("complaint details => ", response.data?.data?.complaint)
@@ -232,16 +233,17 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
           console.log("customerNo ==> ", data.customerNumber)
           setCustomerNo(data?.customerNumber)
           setDescription(data?.description)
-          setSelectedDept({
-            id: data?.department.id,
-            value: data?.department.name,
-            label: data?.department.name.toUpperCase()
-          })
-          setSelectedStaff({
-            id: data?.user.id,
-            value: data?.user.first_name + " " + data?.user.last_name,
-            label: data?.user.first_name.toUpperCase() + " " +  data?.user.last_name.toUpperCase()
-          })
+          console.log("data.department ===> ", data.department)
+          data?.department_id !== null ? setSelectedDept({
+            id: data?.department?.id,
+            value: data?.department?.name,
+            label: data?.department?.name.toUpperCase()
+          }) : setSelectedDept({})
+          data?.user_id !== null ? setSelectedStaff({
+            id: data?.user?.id,
+            value: data?.user?.first_name + " " + data?.user?.last_name,
+            label: data?.user?.first_name.toUpperCase() + " " +  data?.user?.last_name.toUpperCase()
+          }) : setSelectedStaff({})
           setSelectedStatus({
             id: data?.complaint_status.id,
             value: data?.complaint_status.name,
@@ -300,7 +302,7 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault()
-      if (!customer_number.trim() || !description.trim()) {
+      if (!customer_number.trim()) {
         setError(true)
       } else {
         setError(false)
@@ -312,8 +314,8 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
         payload.append("customer_number", customer_number);
         payload.append("complaint_type_id", selectedType.id);
         payload.append("description", description);
-        payload.append("department_id", String(selectedDept.id));
-        // payload.append("staff_id", String(selectedStaff.id));
+        payload.append("department_id", selectedDept !== null ? String(selectedDept.id) : '');
+        payload.append("staff_id", selectedStaff !== null ? String(selectedStaff.id) : '');
         // for (let i = 0; i < attachments.length; i++) {
         //   console.log("attachments[i].blob", attachments[i].blob) 
         //   payload.append("attachments", attachments[i]?.blob);
@@ -379,10 +381,11 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
           {descriptionDD ? <DescriptionDD setDescription={setDescription}/> : null}
 
         </div>
-        {selectedDept && <DropDown label='Department' styles={FormSelectStyle} options={departments} onChange={handleDepartmentChange} defaultValue={selectedDept} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
-        {selectedStaff && <DropDown label='Staff' styles={FormSelectStyle} options={staffs} onChange={handleStaffChange} defaultValue={selectedStaff} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
-        {selectedStatus && <DropDown label='Status' styles={StatusStyle} options={statuses} onChange={handleStatusChange} defaultValue={selectedStatus}/>}
-        {selectedType && <DropDown label='Type' styles={StatusStyle} options={complaintTypes} onChange={handleComplaintTypeChange} defaultValue={selectedType}/>}
+        {console.log("selectedDept ====?? ", selectedDept)}
+        {<DropDown value={selectedDept} label='Department' styles={FormSelectStyle} options={departments} onChange={handleDepartmentChange} defaultValue={selectedDept} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
+        {<DropDown value={selectedStaff} label='Staff' styles={FormSelectStyle} options={staffs} onChange={handleStaffChange} defaultValue={selectedStaff} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
+        {selectedStatus && <DropDown value={selectedStatus} label='Status' styles={StatusStyle} options={statuses} onChange={handleStatusChange} defaultValue={selectedStatus}/>}
+        {selectedType && <DropDown value={selectedType} label='Type' styles={StatusStyle} options={complaintTypes} onChange={handleComplaintTypeChange} defaultValue={selectedType}/>}
         <div className='attachments-container'>
           <label htmlFor="attachments">Attachments</label>
           <input type='file' className='attachment-selector' id="attachments" onChange={(e) => handleAttachments(e)}/>

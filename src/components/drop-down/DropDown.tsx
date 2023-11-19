@@ -2,15 +2,16 @@ import Select from 'react-select';
 import './DropDown.scss'
 
 interface Props {
-    defaultValue?: {id: number, value: string, label: string, color?: string}
+    defaultValue?: {id: number | null, value: string, label: string, color?: string}
     loadOptions?: (inputValue: string, callback: Function) => void,
-    options?: {id: number, value: string, label: string, color?: string}[],
+    options?: {id: number | null, value: string, label: string, color?: string}[],
     onChange?: (option: any) => void,
+    value?: {id: number | null, value: string, label: string, color?: string}
     styles: {},
     label: string,
     disabled?: boolean
 }
-const DropDown = ({defaultValue, options, styles, label, onChange, disabled}: Props) => {
+const DropDown = ({defaultValue, options, styles, label, onChange, disabled, value}: Props) => {
   const handleChange = (selectedOption: any) => {
     console.log(selectedOption)
     // loadOptions(selectedOption)
@@ -21,6 +22,7 @@ const DropDown = ({defaultValue, options, styles, label, onChange, disabled}: Pr
         <Select
           id={label}
           styles={styles}
+          value={value || null}
           // defaultOptions
           // cacheOptions
           options={options}

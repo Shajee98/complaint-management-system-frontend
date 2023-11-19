@@ -7,7 +7,7 @@ interface InputProps {
   value: string | number
   name: string
   placeholder: string
-  error: boolean
+  error?: boolean
   disabled?: boolean
   onChange: (e: ChangeEvent<HTMLInputElement>) => void,
   onFocus?: () => void
