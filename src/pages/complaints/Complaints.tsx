@@ -544,6 +544,7 @@ useEffect(() => {
                 <th>Assigned to</th>
                 <th>Department</th>
                 <th>Status</th>
+                <th>From Whatsapp</th>
                 <th>Actions</th>
               </tr>
               {complaints
@@ -556,6 +557,7 @@ useEffect(() => {
                 <td>{complaint.user ? complaint.user.first_name + " " + complaint.user.last_name : '-'}</td>
                 <td>{complaint.department ? complaint.department.name : '-'}</td>
                 <td>{complaint.complaint_status.name}</td>
+                <td>{complaint.fromWhatsapp == false ? "False" : "True"}</td>
                 <td className="action-cell">
                   <BsEyeFill
                     className="details-icon"

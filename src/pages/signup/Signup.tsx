@@ -196,6 +196,7 @@ const Signup = () => {
               />
               {selectedDept && <DropDown
                 label="Department"
+                value={selectedDept}
                 styles={FormSelectStyle}
                 options={departments}
                 onChange={handleDepartmentChange}
@@ -204,6 +205,7 @@ const Signup = () => {
               />}
               {selectedUserType && <DropDown
                 label="User Type"
+                value={selectedUserType}
                 styles={FormSelectStyle}
                 options={userTypes}
                 onChange={handleUserTypeChange}

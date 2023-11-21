@@ -25,9 +25,9 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
   const [attachments, setAttachments] = useState<any[]>([])
   const [previews, setPreviews] = useState<any[]>([])
   const [departments, setDepartments] = useState<{id: number, value: string, label: string}[]>([])
-  const [selectedDept, setSelectedDept] = useState<any>({})
+  const [selectedDept, setSelectedDept] = useState<any>(null)
   const [staffs, setStaffs] = useState<{id: number, value: string, label: string}[]>([])
-  const [selectedStaff, setSelectedStaff] = useState<any>()
+  const [selectedStaff, setSelectedStaff] = useState<any>(null)
   const [statuses, setStatuses] = useState<{id: number, value: string, label: string, color:string}[]>([])
   const [selectedStatus, setSelectedStatus] = useState<any>()
   const [complaintTypes, setComplaintTypes] = useState<{id: number, value: string, label: string}[]>()
@@ -71,62 +71,62 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
   
     const addPreviews = (
       newPreviews: {
-        // file: string;
+        file: string;
         id: number;
-        fileName: string
+        blob: File
       }[]
+  
+  
     ) => {
+      console.log("previews ===> ", previews)
       for (let i = 0; i < newPreviews?.length; i++) {
         setPreviews((prevPreviews) => [
           ...prevPreviews,
-          { fileName: newPreviews[i].fileName, id: newPreviews[i].id }
+          { file: newPreviews[i].file, id: newPreviews[i].id, blob: newPreviews[i].blob }
         ]);
       }
     };
   
     const handleAttachments = (e: ChangeEvent<HTMLInputElement>) => {
-      // const fileList: FileList | [] = e.target.files || [];
+      const fileList: FileList | [] = e.target.files || [];
       
-      // if (fileList?.length === 0) {
+      if (fileList?.length === 0) {
+        return;
+      } else {
+        let new_files = [];
+        const alreadyAddedFiles = attachments
+        for (let file of fileList as any) {
+          new_files.push({
+          id: Date.now(),
+          file: URL.createObjectURL(file),
+          blob: file,
+          });
+        }
+        // let images = [...new_files];
+        setAttachments([...alreadyAddedFiles, ...new_files]);
+        addPreviews([...new_files]);
+      }
+      // const tempFile: File | undefined = e.target.files?.[0];
+      // if (!tempFile) {
       //   return;
-      // } else {
-      //   let new_files = [];
-      //   for (let file of fileList as any) {
-      //     new_files.push({
-      //       file: file,
-      //       id: Date.now(),
-      //     });
-      //   }
-      //   let images = [...new_files];
-      //   setAttachments([...images]);
-      //   addPreviews([...images]);
       // }
-      const tempFile: File | undefined = e.target.files?.[0];
-      if (!tempFile) {
-        return;
-      }
-      const alreadyAddedImages = attachments || [];
-      const existArray: any = [];
-      alreadyAddedImages.forEach((img: File) => {
-        if (img.name == (tempFile as any).name) existArray.push(img);
-      });
-      if (existArray.length) {
-        console.log("Already Exist");
-        return;
-      }
-      const tempAttachments = [];
-      const tempPreviews = []
-      tempPreviews.push({
-        id: Date.now(),
-        fileName: tempFile.name
-      })
-      tempAttachments.push({
-        id: Date.now(),
-        file: URL.createObjectURL(tempFile),
-        blob: tempFile,
-      });
-      setAttachments([...attachments, tempAttachments])
-      addPreviews([...tempPreviews]);
+      // const alreadyAddedImages = attachments || [];
+      // const existArray: any[] = [];
+      // alreadyAddedImages.forEach((img: File) => {
+      //   if (img.name == (tempFile as any).name) existArray.push(img);
+      // });
+      // if (existArray.length) {
+      //   console.log("Already Exist");
+      //   return;
+      // }
+      // const tempArray = [];
+      // tempArray.push({
+      //   id: Date.now(),
+      //   file: URL.createObjectURL(tempFile),
+      //   blob: tempFile,
+      // });
+      // setAttachments([...attachments, tempArray])
+      // addPreviews(tempArray)
     }
 
   const fetchDepartments = async () => {
@@ -238,12 +238,12 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
             id: data?.department?.id,
             value: data?.department?.name,
             label: data?.department?.name.toUpperCase()
-          }) : setSelectedDept({})
+          }) : setSelectedDept(null)
           data?.user_id !== null ? setSelectedStaff({
             id: data?.user?.id,
             value: data?.user?.first_name + " " + data?.user?.last_name,
             label: data?.user?.first_name.toUpperCase() + " " +  data?.user?.last_name.toUpperCase()
-          }) : setSelectedStaff({})
+          }) : setSelectedStaff(null)
           setSelectedStatus({
             id: data?.complaint_status.id,
             value: data?.complaint_status.name,
@@ -316,10 +316,10 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
         payload.append("description", description);
         payload.append("department_id", selectedDept !== null ? String(selectedDept.id) : '');
         payload.append("staff_id", selectedStaff !== null ? String(selectedStaff.id) : '');
-        // for (let i = 0; i < attachments.length; i++) {
-        //   console.log("attachments[i].blob", attachments[i].blob) 
-        //   payload.append("attachments", attachments[i]?.blob);
-        // }
+        for (let i = 0; i < attachments.length; i++) {
+          console.log("attachments[i].blob", attachments[i].blob) 
+          payload.append("attachments", attachments[i].blob);
+        }
         payload.append("complaint_status_id", String(selectedStatus.id));
         for (var key of payload.entries()) {
           console.log("payload ==> ", key[0] + ', ' + key[1]);
@@ -330,6 +330,7 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
         //   payload,
         //   options
         // )
+        console.log("attachments === > ", attachments)
         await updateComplaint(complaintId, payload, options)
         // .then((response) => {
         //   console.log("response ==> ", response)
