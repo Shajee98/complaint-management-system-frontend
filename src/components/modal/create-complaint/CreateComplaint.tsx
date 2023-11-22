@@ -59,6 +59,7 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
         payload.append("description", description);
         payload.append("department_id", selectedDept !== null ? String(selectedDept.id) : '');
         payload.append("staff_id", selectedStaff !== null ? String(selectedStaff.id) : '');
+        payload.append("fromWhatsapp", "false")
         for (let i = 0; i < attachments.length; i++) {
           console.log("attachments[i].blob", attachments[i].blob) 
           payload.append("attachments", attachments[i]?.blob);
