@@ -16,6 +16,8 @@ const Settings = () => {
   const [progress, setProgress] = useState<any>()
   const [files, setFiles] = useState<any>()
   const [message, setMessage] = useState("")
+  const [fileUploadMsg, setFileUploadMsg] = useState("File Uploaded Successfully")
+  const [buttonText, setButtonText] = useState("Upload CSV")
   const [editMessage, setEditMessage] = useState(true)
 
   const fetchFormat = async () => {
@@ -34,6 +36,11 @@ const Settings = () => {
     } catch (error) {
       console.error("error ==> ", error)
     }
+  }
+
+  const handleFileSelect = (e: any) => {
+    setFiles(e.target.files[0])
+    setButtonText(e.target.files[0].name)
   }
 
   useEffect(() => {
@@ -92,9 +99,9 @@ const Settings = () => {
         <div className='card-body'>
         <h2 className='bulk-msg-subheading'>Upload an excel file to send bulk messages to the customer on Whatsapp for feedback</h2>
         <div className='upload-file-container'>
-        <input type='file' className='file-selector' id="file-input" onChange={(e) => e.target.files?.length ? setFiles(e.target.files[0]) : null}/>
-        <SecondaryButton className='secondary-right-aligned' text='Upload CSV' htmlFor='file-input'/>
-        {progress && <ProgressBar now={progress} label={`${progress}%`} color='blue' />}
+        <input type='file' className='file-selector' id="file-input" onChange={(e) => handleFileSelect(e)}/>
+        <SecondaryButton className='secondary-right-aligned' text={buttonText} htmlFor='file-input'/>
+        {progress == 100 ? fileUploadMsg : ""}
         </div>
         </div>
         <PrimaryButton className={`${files != undefined ? '' : 'disabled'} primary-left-aligned`} text='Save' onClick={submitHandler}/>

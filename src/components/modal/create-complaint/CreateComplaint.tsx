@@ -13,6 +13,7 @@ import { postRequest, postRequestFormData } from '../../../../utils/auth'
 import { useNavigate } from 'react-router-dom'
 import { LocalStorageKeys, getFromStorage } from '../../../../utils/localStorage'
 import DescriptionDD from '../../description-dropdown/DescriptionDD'
+import FormTextArea from '../../form-textarea/FormTextArea'
 
 interface Props {
   onClose: () => void,
@@ -34,7 +35,7 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
   const [selectedStatus, setSelectedStatus] = useState<any>()
   const [complaintTypes, setComplaintTypes] = useState<{id: number, value: string, label: string}[]>()
   const [selectedType, setSelectedComplaintType] = useState<any>()
-  const descriptionRef = createRef<HTMLInputElement>()
+  const descriptionRef = createRef<HTMLTextAreaElement>()
   const descriptionContainerRef = createRef<HTMLDivElement>()
   const [descriptionDD, setDescriptionDD] = useState(false)
   const navigate = useNavigate()
@@ -281,22 +282,22 @@ const fetchComplaintTypes = async () => {
       case "Open":
         return {
           ...status,
-          color: '#FF5733'
+          color: '#00008B'
         }
       case "Resolved":
         return {
           ...status,
-          color: "#00FF00"
+          color: "#013220"
         }
       case "In Progress":
         return {
           ...status,
-          color: "#FFD700"
+          color: "#8B8000"
         }
       case "Cancelled":
         return {
             ...status,
-            color: "#008000"
+            color: "#FF5733"
           }
       default:
         break;
@@ -358,7 +359,7 @@ const fetchComplaintTypes = async () => {
           placeholder="Please enter customer number"
         />
         <div ref={descriptionContainerRef} className='description-wrapper'>
-          <FormInput
+          <FormTextArea
             ref={descriptionRef}
             type="text"
             label="Description"

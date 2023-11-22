@@ -233,22 +233,22 @@ const Complaints = () => {
       case "Open":
         return {
           ...status,
-          color: '#FF5733'
+          color: '#00008B'
         }
       case "Resolved":
         return {
           ...status,
-          color: "#00FF00"
+          color: "#013220"
         }
       case "In Progress":
         return {
           ...status,
-          color: "#FFD700"
+          color: "#8B8000"
         }
       case "Cancelled":
         return {
             ...status,
-            color: "#008000"
+            color: "#FF5733"
           }
       default:
         break;
