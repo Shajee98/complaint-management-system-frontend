@@ -540,6 +540,7 @@ useEffect(() => {
               <tr className="table-header">
                 <th>Complaint ID</th>
                 <th>Phone number</th>
+                <th>Customer Name</th>
                 <th>Reported on</th>
                 <th>Assigned to</th>
                 <th>Department</th>
@@ -553,6 +554,7 @@ useEffect(() => {
               <tr className="table-row">
                 <td>{complaint.id}</td>
                 <td>{complaint.customerNumber}</td>
+                <td>{complaint.customerName}</td>
                 <td>{reportedOn(complaint.createdAt)}</td>
                 <td>{complaint.user ? complaint.user.first_name + " " + complaint.user.last_name : '-'}</td>
                 <td>{complaint.department ? complaint.department.name : '-'}</td>

@@ -22,6 +22,7 @@ interface Props {
 
 const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
   const [customer_number, setCustomerNo] = useState('')
+  const [customer_name, setCustomerName] = useState('')
   const [complaint_number, setComplaintNo] = useState('')
   const [description, setDescription] = useState('')
   const [error, setError] = useState(false)
@@ -55,6 +56,7 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
   
         const payload = new FormData();
         payload.append("customer_number", customer_number);
+        payload.append("customer_name", customer_name);
         payload.append("complaint_number", complaint_number);
         payload.append("complaint_type_id", selectedType.id);
         payload.append("description", description);
@@ -357,6 +359,15 @@ const fetchComplaintTypes = async () => {
           error={error}
           onChange={(e) => setCustomerNo(e.target.value)}
           placeholder="Please enter customer number"
+        />
+        <FormInput 
+          type="text"
+          label="Customer Name"
+          value={customer_name}
+          name="name"
+          error={error}
+          onChange={(e) => setCustomerName(e.target.value)}
+          placeholder="Please enter customer name"
         />
         <div ref={descriptionContainerRef} className='description-wrapper'>
           <FormTextArea

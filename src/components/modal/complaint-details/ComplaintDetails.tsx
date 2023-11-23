@@ -20,6 +20,7 @@ interface Props {
 
 const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
   const [customer_number, setCustomerNo] = useState('')
+  const [customer_name, setCustomerName] = useState('')
   const [description, setDescription] = useState('')
   const [error, setError] = useState(false)
   const [attachments, setAttachments] = useState<any[]>([])
@@ -232,6 +233,7 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
           const data = response.data?.data?.complaint
           console.log("customerNo ==> ", data.customerNumber)
           setCustomerNo(data?.customerNumber)
+          setCustomerName(data?.customerName)
           setDescription(data?.description)
           console.log("data.department ===> ", data.department)
           data?.department_id !== null ? setSelectedDept({
@@ -312,6 +314,7 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
   
         const payload = new FormData();
         payload.append("customer_number", customer_number);
+        payload.append("customer_name", customer_name);
         payload.append("complaint_type_id", selectedType.id);
         payload.append("description", description);
         payload.append("department_id", selectedDept !== null ? String(selectedDept.id) : '');
@@ -365,6 +368,15 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
           error={error}
           onChange={(e) => setCustomerNo(e.target.value)}
           placeholder="Please enter customer number"
+        />
+        <FormInput 
+          type="text"
+          label="Customer Name"
+          value={customer_name}
+          name="name"
+          error={error}
+          onChange={(e) => setCustomerName(e.target.value)}
+          placeholder="Please enter customer name"
         />
         <div ref={descriptionContainerRef} className='description-wrapper'>
           <FormInput
