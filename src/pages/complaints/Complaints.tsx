@@ -2,7 +2,6 @@ import DropDown from "../../components/drop-down/DropDown";
 import { AiOutlinePlus, AiOutlineSearch } from "react-icons/ai";
 import { BsEyeFill } from "react-icons/bs";
 import { FaCommentDots } from "react-icons/fa";
-import { GrAdd } from 'react-icons/gr'
 import "./Complaints.scss";
 import {
   Chart as ChartJS,
@@ -543,6 +542,7 @@ useEffect(() => {
                 <th>Customer Name</th>
                 <th>Reported on</th>
                 <th>Assigned to</th>
+                <th>Created By</th>
                 <th>Department</th>
                 <th>Status</th>
                 <th>From Whatsapp</th>
@@ -557,6 +557,7 @@ useEffect(() => {
                 <td>{complaint.customerName}</td>
                 <td>{reportedOn(complaint.createdAt)}</td>
                 <td>{complaint.user ? complaint.user.first_name + " " + complaint.user.last_name : '-'}</td>
+                <td>{complaint.createdBy}</td>
                 <td>{complaint.department ? complaint.department.name : '-'}</td>
                 <td>{complaint.complaint_status.name}</td>
                 <td>{complaint.fromWhatsapp == false ? "False" : "True"}</td>

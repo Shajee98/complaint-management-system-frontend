@@ -25,8 +25,8 @@ const Signup = () => {
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [displayMessage, setdm] = useState("");
   const [error, setError] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchDepartments();
@@ -123,6 +123,14 @@ const Signup = () => {
           department_id: selectedDept.id,
         }).then((response) => {
           if (response.data.status.success) {
+            setdm("* User has been registered successfully!");
+            setFirstName("");
+            setLastName("");
+            setUsername("");
+            setPassword("");
+            setTimeout(() => {
+              setdm("")
+            }, 5000);
             setErrorMessage("");
             // navigate("/login");
           }
@@ -219,6 +227,8 @@ const Signup = () => {
                 onClick={handleSubmit}
                 className="modal-primary"
               />
+              <p className="signup-message-text">{displayMessage}</p>
+              
               {/* <p className="login-text">
                 Already have an account?{" "}
                 <span className="login-link" onClick={() => navigate("/login")}>

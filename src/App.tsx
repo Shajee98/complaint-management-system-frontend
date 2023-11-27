@@ -6,6 +6,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import Login from "./pages/login/Login";
 import Signup from "./pages/signup/Signup";
 import UserProvider from "../context/UserProvider";
+import MessageStatus from "./pages/message-status/MessageStatus";
 // import "bootstrap/dist/css/bootstrap.min.css"
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
                   <Route path="/" element={<Navigate to="/complaints"/>}/>
                   <Route path="/complaints" element={<Complaints />} />
                   <Route path="/settings" element={<Settings />} />
+                  <Route path="/message-status" element={<MessageStatus />} />
                 </Route>
                 <Route path="/" element={<Navigate to="/login"/>}/>
                 <Route path="/login" element={<Login />} />

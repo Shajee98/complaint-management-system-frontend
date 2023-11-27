@@ -6,19 +6,34 @@ import { LocalStorageKeys, getFromStorage } from '../../../utils/localStorage'
 import Header from '../../components/header/Header'
 import Navbar from '../../components/navbar/Navbar'
 import { ProgressBar } from 'react-bootstrap'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { postRequestFormData } from '../../../utils/auth'
-import { getWhatsappMessageFormat, updateWhatsappMessageFormat } from './service/Settings'
+import { getAllUsers, getWhatsappMessageFormat, updateWhatsappMessageFormat } from './service/Settings'
 import Signup from '../signup/Signup'
 import './Settings.scss'
+import ReactPaginate from 'react-paginate'
 
 const Settings = () => {
   const [progress, setProgress] = useState<any>()
   const [files, setFiles] = useState<any>()
   const [message, setMessage] = useState("")
+  const [users, setUsers] = useState<any[]>([])
+  const messageRef = useRef<HTMLInputElement>(null)
   const [fileUploadMsg, setFileUploadMsg] = useState("File Uploaded Successfully")
   const [buttonText, setButtonText] = useState("Upload CSV")
   const [editMessage, setEditMessage] = useState(true)
+  const [pageNumber, setPageNumber] = useState(0);
+
+  const usersPerPage = 10;
+  const pagesVisited = pageNumber * usersPerPage;
+
+  const pageCount = Math.ceil(users.length / usersPerPage);
+
+  const changePage = (selectedItem: {
+    selected: number;
+    }) => {
+    setPageNumber(selectedItem.selected);
+  };
 
   const fetchFormat = async () => {
     try {
@@ -43,8 +58,26 @@ const Settings = () => {
     setButtonText(e.target.files[0].name)
   }
 
+  const handleEditMessage = () => {
+    setEditMessage(!editMessage)
+    setTimeout(() => {
+      messageRef.current?.focus();
+    }, 0);
+  }
+
+  const fetchUsers = async () => {
+    try {
+        const response = await getAllUsers()
+        setUsers(response.data.data.users)
+        // setUsersCopy(response.data.data.users.rows)
+    } catch (error) {
+        console.log("error ===> ", error)
+    }
+  };
+
   useEffect(() => {
     fetchFormat()
+    fetchUsers()
   }, [])
   const submitHandler = async () => {
     try {
@@ -92,7 +125,8 @@ const Settings = () => {
                   : "login-signup-container"
               }`}
             >
-    <div className='settings-container'>
+    <div className='settings-parent-container'>
+    <div className='settings-child-container'>
       <div className='bulk-messages-actions'>
       <div className='card-container'>
         <Heading2 className='heading2-right-aligned' text='Send Message' />
@@ -110,14 +144,49 @@ const Settings = () => {
         <Heading2 className='heading2-right-aligned' text='Whatsapp Message Format' />
         <div className='card-body'>
             <div className='format-container'>
-                <input type='text' disabled={editMessage} className='whatsapp-format' value={message} onChange={(e) => setMessage(e.target.value)}/>
-                <HiPencil className="edit-icon" onClick={() => setEditMessage(!editMessage)}/>
+                <input ref={messageRef} type='text' disabled={editMessage} className='whatsapp-format' value={message} onChange={(e) => setMessage(e.target.value)}/>
+                <HiPencil className="edit-icon" onClick={handleEditMessage}/>
             </div>
             <PrimaryButton text='Update' className='primary-left-aligned' onClick={updateMessageFormat} />
         </div>
       </div>
       </div>
       <Signup />
+    </div>
+      <div className='card-container'>
+      <Heading2 className='heading2-right-aligned' text='Users' />
+            <table className="users-table">
+              <tr className="table-header">
+                <th>User ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+                <th>Department</th>
+              </tr>
+              {users
+              .slice(pagesVisited, pagesVisited + usersPerPage)
+              .map((user) => (
+              <tr className="table-row">
+                <td>{user.id}</td>
+                <td>{user.first_name}</td>
+                <td>{user.last_name}</td>
+                <td>{user.user_name}</td>
+                <td>{user.department ? user.department.name : '-'}</td>
+              </tr>
+                  ))}
+            </table>
+            <ReactPaginate
+              previousLabel={"Previous"}
+              nextLabel={"Next"}
+              pageCount={pageCount}
+              onPageChange={changePage}
+              containerClassName={"paginationBttns"}
+              previousLinkClassName={"previousBttn"}
+              nextLinkClassName={"nextBttn"}
+              disabledClassName={"paginationDisabled"}
+              activeClassName={"paginationActive"}
+            />
+      </div>
     </div>
     </div>
     </div>

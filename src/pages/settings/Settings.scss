@@ -1,8 +1,34 @@
-.settings-container {
+.settings-child-container {
     width: auto;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     // column-gap: 50px;
+}
+
+.settings-parent-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.users-table {
+    border: 1px solid grey;
+    border-radius: 5px;
+    // height: 60vh;
+    // display: flex;
+    // justify-content: flex-start;
+    .table-header {
+        background-color: #F8F8FB;
+        // height: 20px;
+    }
+
+    .table-row {
+        text-align: center;
+        font-size: 14px;
+        // height: 10px;
+        td {
+            align-self: center;
+        }
+    }
 }
 
 .card-container {
@@ -29,6 +55,7 @@
 
 .whatsapp-format {
     height: 30px;
+    padding-left: 10px;
     background-color: transparent;
     border: none;
     width: 90%;

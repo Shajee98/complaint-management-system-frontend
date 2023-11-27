@@ -39,7 +39,6 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
   const descriptionRef = createRef<HTMLTextAreaElement>()
   const descriptionContainerRef = createRef<HTMLDivElement>()
   const [descriptionDD, setDescriptionDD] = useState(false)
-  const navigate = useNavigate()
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     console.log("Attachments before submit", attachments)
@@ -57,6 +56,7 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
         const payload = new FormData();
         payload.append("customer_number", customer_number);
         payload.append("customer_name", customer_name);
+        payload.append("created_by", getFromStorage(LocalStorageKeys.USER).user.first_name + ' ' + getFromStorage(LocalStorageKeys.USER).user.last_name);
         payload.append("complaint_number", complaint_number);
         payload.append("complaint_type_id", selectedType.id);
         payload.append("description", description);
