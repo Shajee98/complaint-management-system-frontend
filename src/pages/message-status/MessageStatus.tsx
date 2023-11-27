@@ -1,26 +1,40 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LocalStorageKeys, getFromStorage } from '../../../utils/localStorage'
 import Header from '../../components/header/Header'
 import Navbar from "../../components/navbar/Navbar";
 import Heading1 from '../../components/typography/heading-1/Heading1';
 import './MessageStatus.scss'
 import ReactPaginate from 'react-paginate';
+import { getAllStatuses } from './service/MessageStatus';
 
 
 const MessageStatus = () => {
     const [pageNumber, setPageNumber] = useState(0);
-    const [messagesStatus, setMessagesStatus] = useState<any[]>([])
+    const [messagesStatuses, setMessagesStatuses] = useState<any[]>([])
 
     const usersPerPage = 10;
     const pagesVisited = pageNumber * usersPerPage;
   
-    const pageCount = Math.ceil(messagesStatus.length / usersPerPage);
+    const pageCount = Math.ceil(messagesStatuses.length / usersPerPage);
   
     const changePage = (selectedItem: {
       selected: number;
       }) => {
       setPageNumber(selectedItem.selected);
     };
+    const fetchStatuses = async () => {
+        try {
+            const response = await getAllStatuses()
+            setMessagesStatuses(response.data.data)
+            // setUsersCopy(response.data.data.users.rows)
+        } catch (error) {
+            console.log("error ===> ", error)
+        }
+      };
+    
+      useEffect(() => {
+        fetchStatuses()
+      }, [])
   return (
     <>
       {getFromStorage(LocalStorageKeys.USER) && <Header />}
@@ -50,14 +64,14 @@ const MessageStatus = () => {
                 <th>Description</th>
                 <th>Service End Date</th>
               </tr>
-              {messagesStatus
+              {messagesStatuses
               .slice(pagesVisited, pagesVisited + usersPerPage)
               .map((message) => (
               <tr className="table-row">
-                <td>{message.customer_number}</td>
-                <td>{message.message_status}</td>
-                <td>{message.message_status}</td>
-                <td>{message.service_end_date}</td>
+                <td>{message.customerNumber}</td>
+                <td>{message.messageStatus}</td>
+                <td>{message.messageStatus}</td>
+                <td>{message.serviceEndDate}</td>
               </tr>
                   ))}
             </table>

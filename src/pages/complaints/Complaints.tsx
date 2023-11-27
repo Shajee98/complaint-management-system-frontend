@@ -554,7 +554,7 @@ useEffect(() => {
               <tr className="table-row">
                 <td>{complaint.id}</td>
                 <td>{complaint.customerNumber}</td>
-                <td>{complaint.customerName}</td>
+                <td>{complaint.customerName ? complaint.customerName : '-'}</td>
                 <td>{reportedOn(complaint.createdAt)}</td>
                 <td>{complaint.user ? complaint.user.first_name + " " + complaint.user.last_name : '-'}</td>
                 <td>{complaint.createdBy}</td>
