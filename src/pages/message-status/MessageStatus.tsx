@@ -70,7 +70,7 @@ const MessageStatus = () => {
               <tr className="table-row">
                 <td>{message.customerNumber}</td>
                 <td>{message.messageStatus}</td>
-                <td>{message.messageStatus}</td>
+                <td>{message.messageStatus == 0 && 'Pending'}{message.messageStatus == 1 && 'Not Delivered'}{message.messageStatus == 2 && 'Delivered'}</td>
                 <td>{message.serviceEndDate}</td>
               </tr>
                   ))}
