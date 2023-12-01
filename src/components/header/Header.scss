@@ -24,15 +24,10 @@
     }
 }
 
-.logo {
-    width: 150px;
-    height: 15vh;
-}
-
 .profile-avatar {
     position: relative;
     display: flex;
-    width: 50px;
+    width: max-content;
     justify-content: space-between;
     align-items: center;
 }
@@ -49,5 +44,6 @@
     &:hover {
         background: #3373B1;
         color: white;
+        cursor: pointer;
     }
 }

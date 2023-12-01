@@ -24,6 +24,13 @@ const Login = () => {
     getFromStorage(LocalStorageKeys.USER) ? navigate("/complaints") : null;
   }, []);
 
+  const handleKeyDown = (e: any) => {
+    if (e.key === 'Enter') {
+      // Trigger the submit when Enter key is pressed
+      handleSubmit(e);
+    }
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
@@ -75,21 +82,22 @@ const Login = () => {
             </div>
             <div className="login-form">
               <FormInput
-                type="text"
                 label="Username"
                 value={user_name}
                 name="username"
                 error={error}
                 onChange={(e) => setUsername(e.target.value)}
+                onKeyPress={handleKeyDown}
                 placeholder="Please enter username"
               />
               <FormInput
-                type="password"
+                isPasswordFeild={true}
                 label="Password"
                 value={password}
                 name="password"
                 error={error}
                 onChange={(e) => setPassword(e.target.value)}
+                onKeyPress={handleKeyDown}
                 placeholder="Please enter password"
               />
               {errorMessage.length != 0 ? (

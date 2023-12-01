@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { LocalStorageKeys, getFromStorage } from "../../../utils/localStorage";
 import Header from "../../components/header/Header";
 import Navbar from "../../components/navbar/Navbar";
-import { getAllDepartments, getUserTypes, userSignUp } from "./service/Signup";
+import { getAllDepartments, getCompanies, getUserTypes, userSignUp } from "./service/Signup";
 import DropDown from "../../components/drop-down/DropDown";
 import { FormSelectStyle } from "../../components/drop-down/ReactSelectStyles";
 
@@ -19,7 +19,11 @@ const Signup = () => {
   const [userTypes, setUserTypes] = useState<
     { id: number; value: string; label: string }[]
   >([]);
+  const [companies, setCompanies] = useState<
+  { id: number; value: string; label: string }[]
+>([]);
   const [selectedDept, setSelectedDept] = useState<any>();
+  const [selectedCompany, setSelectedCompany] = useState<any>();
   const [selectedUserType, setSelectedUserType] = useState<any>();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -31,8 +35,35 @@ const Signup = () => {
   useEffect(() => {
     fetchDepartments();
     fetchUserTyes();
+    fetchCompanies()
     // getFromStorage(LocalStorageKeys.USER) ? navigate("/complaints") : null;
   }, []);
+
+  const fetchCompanies = async () => {
+    const response = await getCompanies()
+    const user = getFromStorage(LocalStorageKeys.USER)
+    let companiesCopy = response.data.data.complaintType.map((company: any) => {
+      return {
+        id: company.id,
+        value: company.name,
+        label: company.name.toUpperCase(),
+      };
+    });
+    if (user.user.user_type_id == 1)
+    {
+      const company = companiesCopy.filter((company: any) => company.id == user.user.company_type_id)
+      console.log("dept ===> ", company[0])
+      setSelectedCompany(company[0])
+    }
+    else
+    {
+      setSelectedCompany(companiesCopy[0]);
+    }
+    console.log("companiesCopy ==> ", companiesCopy);
+    setCompanies([...companiesCopy]);
+    console.log("companies ==> ", companies);
+    return companiesCopy;
+  }
 
   const fetchDepartments = async () => {
     const response = await getAllDepartments();
@@ -98,6 +129,12 @@ const Signup = () => {
     console.log("selectedDept ===> ", option);
     setSelectedUserType(option);
   };
+
+  const handleCompanyChange = (option: any) => {
+    console.log("selectedDept ===> ", option);
+    setSelectedCompany(option);
+  };
+
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     try {
@@ -167,7 +204,6 @@ const Signup = () => {
             </div>
             <div className="signup-form">
               <FormInput
-                type="text"
                 label="Firstname"
                 value={firstName}
                 name="firstName"
@@ -176,7 +212,6 @@ const Signup = () => {
                 placeholder="Please enter username"
               />
               <FormInput
-                type="text"
                 label="Lastname"
                 value={lastName}
                 name="lastName"
@@ -185,7 +220,6 @@ const Signup = () => {
                 placeholder="Please enter username"
               />
               <FormInput
-                type="text"
                 label="Username"
                 value={username}
                 name="username"
@@ -194,7 +228,7 @@ const Signup = () => {
                 placeholder="Please enter username"
               />
               <FormInput
-                type="password"
+                isPasswordFeild={true}
                 label="Password"
                 value={password}
                 name="password"
@@ -219,6 +253,15 @@ const Signup = () => {
                 onChange={handleUserTypeChange}
                 defaultValue={selectedUserType}
                 disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 1}
+              />}
+              {selectedUserType && <DropDown
+                label="Company"
+                value={selectedCompany}
+                styles={FormSelectStyle}
+                options={companies}
+                onChange={handleCompanyChange}
+                defaultValue={selectedCompany}
+                disabled={getFromStorage(LocalStorageKeys.USER).user.company_type_id == 1}
               />}
             </div>
             <div className="signup-footer">

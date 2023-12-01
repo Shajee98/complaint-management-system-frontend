@@ -4,10 +4,9 @@ import Complaints from "./pages/complaints/Complaints";
 import Settings from "./pages/settings/Settings";
 import ProtectedRoute from "./ProtectedRoute";
 import Login from "./pages/login/Login";
-import Signup from "./pages/signup/Signup";
 import UserProvider from "../context/UserProvider";
 import MessageStatus from "./pages/message-status/MessageStatus";
-// import "bootstrap/dist/css/bootstrap.min.css"
+import Analytics from "./pages/analytics/Analytics";
 
 function App() {
   return (
@@ -39,6 +38,7 @@ function App() {
                   <Route path="/complaints" element={<Complaints />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/message-status" element={<MessageStatus />} />
+                  <Route path="/analytics" element={<Analytics />} />
                 </Route>
                 <Route path="/" element={<Navigate to="/login"/>}/>
                 <Route path="/login" element={<Login />} />

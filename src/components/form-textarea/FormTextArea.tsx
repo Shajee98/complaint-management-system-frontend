@@ -21,7 +21,7 @@ const FormTextArea = forwardRef<HTMLTextAreaElement, InputProps>(({error, label,
     <div className="input-wrapper">
       <label htmlFor={label}>{label}</label>
       <textarea
-        className="form-input"
+        className="form-text-area"
         id={label}
         value={value}
         name={name}

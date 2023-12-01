@@ -162,6 +162,7 @@ const Settings = () => {
                 <th>Last Name</th>
                 <th>Username</th>
                 <th>Department</th>
+                <th>User Role</th>
               </tr>
               {users
               .slice(pagesVisited, pagesVisited + usersPerPage)
@@ -172,6 +173,7 @@ const Settings = () => {
                 <td>{user.last_name}</td>
                 <td>{user.user_name}</td>
                 <td>{user.department ? user.department.name : '-'}</td>
+                <td>{user.user_type.name}</td>
               </tr>
                   ))}
             </table>

@@ -13,3 +13,7 @@ export const getAllDepartments = () => {
 export const getUserTypes = () => {
   return catchAxiosError(getRequest(`${API_URL}/users/types/get/all`))
 }
+
+export const getCompanies = () => {
+  return catchAxiosError(getRequest(`${API_URL}/users/complaint-types/get/all`))
+}

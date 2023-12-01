@@ -5,7 +5,8 @@ import { FiLogOut } from 'react-icons/fi'
 import { userLogout } from './services/Header'
 import { useNavigate } from 'react-router-dom'
 import './Header.scss'
-import { LocalStorageKeys, removeFromStorage } from '../../../utils/localStorage'
+import { LocalStorageKeys, getFromStorage, removeFromStorage } from '../../../utils/localStorage'
+import Heading2 from '../typography/heading-2/Heading2'
 
 const Header = () => {
     const [visible, setVisible] = useState(false)
@@ -21,6 +22,7 @@ const Header = () => {
         <img className='logo' src="../../../assets/AEG-pakistan.png" alt="logo" />
       </div>
       <div className='profile-avatar' onClick={() => setVisible(!visible)}>
+        {getFromStorage(LocalStorageKeys.USER).user.first_name + " " + getFromStorage(LocalStorageKeys.USER).user.last_name}
         <BsFillPersonFill />
         {/* {visible ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />} */}
         <FiLogOut className='logout-button' onClick={logout}/>

@@ -264,8 +264,20 @@ const fetchComplaintTypes = async () => {
   })
   console.log("typesCopy ==> ", typesCopy)
   setComplaintTypes([...typesCopy])
-  const type_id = localStorage.getItem("complaint_type")
-  setSelectedComplaintType(type_id == "1" ? typesCopy[0] : typesCopy[1])
+  const type_id = getFromStorage(LocalStorageKeys.USER).user.company_type_id
+  switch (type_id) {
+    case 1:
+      setSelectedComplaintType(typesCopy[0])
+      break;
+    case 2:
+      setSelectedComplaintType(typesCopy[1])
+      break;
+    case null:
+      setSelectedComplaintType(typesCopy[0])
+      break;
+    default:
+      break;
+  }
   return typesCopy
   }
 
@@ -277,15 +289,10 @@ const fetchComplaintTypes = async () => {
           value: status.name,
           label: status.name.toUpperCase()
       }
-  })
+  }).filter((status: any) => status.value != "All")
 
   const statusModified = statusesCopy.map((status: any) => {
     switch (status.value) {
-      case "Open":
-        return {
-          ...status,
-          color: '#00008B'
-        }
       case "Resolved":
         return {
           ...status,
@@ -296,7 +303,7 @@ const fetchComplaintTypes = async () => {
           ...status,
           color: "#8B8000"
         }
-      case "Cancelled":
+      case "Late":
         return {
             ...status,
             color: "#FF5733"
@@ -352,7 +359,6 @@ const fetchComplaintTypes = async () => {
       </div>
       <form className='form-wrapper'>
         <FormInput 
-          type="text"
           label="Customer Number"
           value={customer_number}
           name="name"
@@ -361,7 +367,6 @@ const fetchComplaintTypes = async () => {
           placeholder="Please enter customer number"
         />
         <FormInput 
-          type="text"
           label="Customer Name"
           value={customer_name}
           name="name"
@@ -387,7 +392,7 @@ const fetchComplaintTypes = async () => {
         {<DropDown value={selectedDept} label='Department' styles={FormSelectStyle} options={departments} onChange={handleDepartmentChange} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
         {<DropDown value={selectedStaff} label='Staff' styles={FormSelectStyle} options={staffs} onChange={handleStaffChange} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
         {selectedStatus && <DropDown value={selectedStatus} label='Status' styles={StatusStyle} options={statuses} onChange={handleStatusChange} defaultValue={selectedStatus}/>}
-        {selectedType && <DropDown value={selectedType} label='Type' styles={StatusStyle} disabled={true} options={complaintTypes} onChange={handleComplaintTypeChange} defaultValue={selectedType}/>}
+        {selectedType && <DropDown value={selectedType} label='Type' styles={StatusStyle} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id != 2} options={complaintTypes} onChange={handleComplaintTypeChange} defaultValue={selectedType}/>}
         {/* [{value: 'open', label: 'Open', color: '#FF5733'}, {value: 'resolved', label: 'Resolved', color: '#00FF00'}, {value: 'in progress', label: 'In Progress', color: '#FFD700'}, {value: 'resolved', label: 'Resolved', color: '#00FF00'},{value: 'cancelled', label: 'Cancelled', color: '#008000'}] */}
         <div className='attachments-container'>
           <label htmlFor="attachments">Attachments</label>

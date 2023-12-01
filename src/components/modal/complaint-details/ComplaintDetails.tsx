@@ -190,28 +190,24 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
           value: status.name,
           label: status.name.toUpperCase()
       }
-  })
+  }).filter((status: any) => status.value != "All")
+
   const statusModified = statusesCopy.map((status: any) => {
     switch (status.value) {
-      case "Open":
-        return {
-          ...status,
-          color: '#FF5733'
-        }
       case "Resolved":
         return {
           ...status,
-          color: "#00FF00"
+          color: "#013220"
         }
       case "In Progress":
         return {
           ...status,
-          color: "#FFD700"
+          color: "#8B8000"
         }
-      case "Cancelled":
+      case "Late":
         return {
             ...status,
-            color: "#008000"
+            color: "#FF5733"
           }
       default:
         break;
@@ -219,7 +215,7 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
   })
   console.log("statusesCopy ==> ", statusesCopy)
   setStatuses([...statusModified])
-  // setSelectedStatus(statusesCopy[0])
+  setSelectedStatus(statusesCopy[0])
   console.log("departments ==> ", departments)
   return statusesCopy
   }
@@ -361,27 +357,26 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
       </div>
       <form className='form-wrapper'>
         <FormInput 
-          type="text"
           label="Customer Number"
           value={customer_number}
           name="name"
           error={error}
           onChange={(e) => setCustomerNo(e.target.value)}
           placeholder="Please enter customer number"
+          disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 1}
         />
         <FormInput 
-          type="text"
           label="Customer Name"
           value={customer_name}
           name="name"
           error={error}
           onChange={(e) => setCustomerName(e.target.value)}
           placeholder="Please enter customer name"
+          disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 1}
         />
         <div ref={descriptionContainerRef} className='description-wrapper'>
           <FormInput
             ref={descriptionRef}
-            type="text"
             label="Description"
             value={description}
             name="name"
@@ -390,12 +385,13 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
             onFocus={() => handleFocus()}
             // onBlur={() => setDescriptionDD(false)}
             placeholder="Please enter complaint description"
+          disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 1}
           />
           {descriptionDD ? <DescriptionDD setDescription={setDescription}/> : null}
 
         </div>
         {console.log("selectedDept ====?? ", selectedDept)}
-        {<DropDown value={selectedDept} label='Department' styles={FormSelectStyle} options={departments} onChange={handleDepartmentChange} defaultValue={selectedDept} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
+        {<DropDown value={selectedDept} label='Department' styles={FormSelectStyle} options={departments} onChange={handleDepartmentChange} defaultValue={selectedDept} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3 || getFromStorage(LocalStorageKeys.USER).user.user_type_id == 1}/>}
         {<DropDown value={selectedStaff} label='Staff' styles={FormSelectStyle} options={staffs} onChange={handleStaffChange} defaultValue={selectedStaff} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
         {selectedStatus && <DropDown value={selectedStatus} label='Status' styles={StatusStyle} options={statuses} onChange={handleStatusChange} defaultValue={selectedStatus}/>}
         {selectedType && <DropDown value={selectedType} label='Type' styles={StatusStyle} options={complaintTypes} onChange={handleComplaintTypeChange} defaultValue={selectedType}/>}

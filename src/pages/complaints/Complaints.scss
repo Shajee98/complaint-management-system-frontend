@@ -248,3 +248,18 @@
     background-color: grey;
     cursor: not-allowed;
   }
+
+  .in-progress {
+    color: #8B8000;
+    font-weight: 700;
+  }
+
+  .resolved {
+    color: #013220;
+    font-weight: 700;
+  }
+
+  .late {
+    color: #FF5733;
+    font-weight: 700;
+  }

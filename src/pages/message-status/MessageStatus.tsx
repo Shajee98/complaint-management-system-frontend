@@ -3,9 +3,10 @@ import { LocalStorageKeys, getFromStorage } from '../../../utils/localStorage'
 import Header from '../../components/header/Header'
 import Navbar from "../../components/navbar/Navbar";
 import Heading1 from '../../components/typography/heading-1/Heading1';
-import './MessageStatus.scss'
+import { BsCheckCircleFill,BsXCircleFill,BsExclamationCircleFill } from "react-icons/bs";
 import ReactPaginate from 'react-paginate';
 import { getAllStatuses } from './service/MessageStatus';
+import './MessageStatus.scss'
 
 
 const MessageStatus = () => {
@@ -60,6 +61,7 @@ const MessageStatus = () => {
                 <table className="users-table">
               <tr className="table-header">
                 <th>Customer Number</th>
+                <th>Customer Name</th>
                 <th>Message Status</th>
                 <th>Description</th>
                 <th>Service End Date</th>
@@ -69,7 +71,8 @@ const MessageStatus = () => {
               .map((message) => (
               <tr className="table-row">
                 <td>{message.customerNumber}</td>
-                <td>{message.messageStatus}</td>
+                <td>{message.customerName}</td>
+                <td>{message.messageStatus==0 && <BsExclamationCircleFill color="#ddaa00" class="icon"/>}{message.messageStatus==1 && <BsXCircleFill color="#990000" class="icon"/>}{message.messageStatus==2 && <BsCheckCircleFill color="#009900" class="icon"/>}</td>
                 <td>{message.messageStatus == 0 && 'Pending'}{message.messageStatus == 1 && 'Not Delivered'}{message.messageStatus == 2 && 'Delivered'}</td>
                 <td>{message.serviceEndDate}</td>
               </tr>
