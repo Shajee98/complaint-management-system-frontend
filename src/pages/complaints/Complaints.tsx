@@ -19,6 +19,7 @@ import Navbar from "../../components/navbar/Navbar";
 import { getAllComplaints, getAllDepartments } from "./service/Complaint";
 import { getAllStatuses } from "../../components/modal/create-complaint/services/CreateComplaint";
 import ReactPaginate from "react-paginate";
+import moment from 'moment-timezone'
 
 const Complaints = () => {
   const [isSuperAdmin, setIsSuperAdmin] = useState(true);
@@ -33,6 +34,7 @@ const Complaints = () => {
     { id: number | null; value: string; label: string }[]
   >([]);
   const [selectedDept, setSelectedDept] = useState<any>();
+  const [presetDate, setPresetDate] = useState<any>();
   const [statuses, setStatuses] = useState<
     { id: number; value: string; label: string; color: string }[]
   >([]);
@@ -52,6 +54,29 @@ const Complaints = () => {
   const changePage = (selectedItem: { selected: number }) => {
     setPageNumber(selectedItem.selected);
   };
+
+  const presetDates = [
+    {
+      id: 0,
+      value: "1 week",
+      label: "1 Week"
+    },
+    {
+      id: 1,
+      value: "2 week",
+      label: "2 Week"
+    },
+    {
+      id: 2,
+      value: "1 month",
+      label: "1 Month"
+    },
+    {
+      id: 3,
+      value: "1 year",
+      label: "1 Year"
+    }
+  ]
 
   const clearDate = () => {
     setComplaints(complaintsCopy);
@@ -250,6 +275,119 @@ const Complaints = () => {
     fetchComplaints(option.id, 0);
   };
 
+  const handlePresetDateChange = (option: any) => {
+    setPresetDate(option)
+    onPresetDateChange(option)
+  }
+
+  const onPresetDateChange = (option: any) => {
+    switch (option.value) {
+      case "1 week":
+        const date_1 = new Date()
+        let day_1
+        let month_1
+        let year_1
+        if (date_1.getDate() - 7 >= 1)
+        {
+          day_1 = date_1.getDate() - 7
+          month_1 = date_1.getMonth()
+          year_1 = date_1.getFullYear()
+        }
+        else {
+          const thirty_days_month = [4,6,9,11]
+          const is_thirty = thirty_days_month.some((month) => month == date_1.getMonth())
+          if (is_thirty)
+          {
+            day_1 = 30 + date_1.getDate() - 7
+            month_1 = date_1.getMonth() - 1
+            if (month_1 < 1)
+            {
+              year_1 = date_1.getFullYear() - 1
+            }
+            else 
+            {
+              year_1 = date_1.getFullYear()
+            }
+          }          
+          else 
+          {
+            day_1 = 31 + date_1.getDate() - 7
+            month_1 = date_1.getMonth() - 1
+            if (month_1 < 1)
+            {
+              year_1 = date_1.getFullYear() - 1
+            }
+            else 
+            {
+              year_1 = date_1.getFullYear()
+            }
+          }
+        }
+        setFromDate(`${year_1}-${month_1}-${day_1}`)
+        setToDate(`${date_1.getFullYear()}-${date_1.getMonth()+1}-${date_1.getDate() < 10 ? '0' : null}${date_1.getDate()}`)
+        break;
+        case "2 week":
+          const date_2 = new Date()
+          let day_2
+          let month_2
+          let year_2
+          if (date_2.getDate() - 14 >= 1)
+          {
+            day_2 = date_2.getDate() - 14
+            month_2 = date_2.getMonth()
+            year_2 = date_2.getFullYear()
+          }
+          else {
+            const thirty_days_month = [4,6,9,11]
+            const is_thirty = thirty_days_month.some((month) => month == date_2.getMonth())
+            if (is_thirty)
+            {
+              day_2 = 30 + date_2.getDate() - 14
+              month_2 = date_2.getMonth() - 1
+              if (month_2 < 1)
+              {
+                year_2 = date_2.getFullYear() - 1
+              }
+              else 
+              {
+                year_2 = date_2.getFullYear()
+              }
+            }          
+            else 
+            {
+              day_2 = 31 + date_2.getDate() - 14
+              month_2 = date_2.getMonth() - 1
+              if (month_2 < 1)
+              {
+                year_2 = date_2.getFullYear() - 1
+              }
+              else 
+              {
+                year_2 = date_2.getFullYear()
+              }
+            }
+          }
+          setFromDate(`${year_2}-${month_2}-${day_2}`)
+          setToDate(`${date_2.getFullYear()}-${date_2.getMonth()+1}-${date_2.getDate() < 10 ? '0' : null}${date_2.getDate()}`)
+          break;
+          case "1 month":
+            const date_3 = new Date()
+            const day_3 = date_3.getDate()
+            let month_3 = date_3.getMonth() + 1
+            let year_3 = date_3.getFullYear()
+            if (month_3 - 1 < 1)
+            {
+              year_3 = date_3.getFullYear() - 1
+            }
+
+            setFromDate(`${year_3}-${month_3 - 1}-${day_3 < 10 ? '0' : null}${day_3}`)
+            setToDate(`${date_3.getFullYear()}-${month_3}-${date_3.getDate() < 10 ? '0' : null}${date_3.getDate()}`)
+            break;
+      default:
+        break;
+    }
+  }
+
   const handleStatusChange = (option: any) => {
     console.log("selectedStatus ===> ", selectedStatus);
     setSelectedStatus(option);
@@ -270,20 +408,11 @@ const Complaints = () => {
   };
 
   const reportedOn = (dateString: any) => {
-    const date = new Date(dateString);
-
-    // Define functions to add leading zeros to single-digit numbers
-    const addLeadingZero = (num: any) => (num < 10 ? "0" + num : num);
-
-    // Extract date components
-    const day = addLeadingZero(date.getDate());
-    const month = addLeadingZero(date.getMonth() + 1); // Month is zero-based
-    const year = date.getFullYear();
-    const hours = addLeadingZero(date.getUTCHours());
-    const minutes = addLeadingZero(date.getUTCMinutes());
-
-    // Create the formatted date string
-    const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}`;
+    console.log(dateString)
+    const timestamp = moment(dateString).tz('Asia/Karachi');
+    
+    console.log(timestamp.format('DD/MM/YYYY HH:mm'));
+    const formattedDate = timestamp.format('DD/MM/YYYY HH:mm')
     return formattedDate;
   };
 
@@ -403,6 +532,16 @@ const Complaints = () => {
                 onClick={() => setShowAddComplaintModal(true)}
               /> */}
               <div className="date-filter-container">
+                {/* <div className="preset-date">
+
+                </div> */}
+                {/* <DropDown
+                  label="Preset Dates"
+                  styles={FilterSelectStyle}
+                  options={presetDates}
+                  onChange={handlePresetDateChange}
+                  value={presetDate}
+                /> */}
                 <div className="date-filter-wrapper">
                   <div className="individual-date-filter">
                     <label className="date-filter-label">From</label>

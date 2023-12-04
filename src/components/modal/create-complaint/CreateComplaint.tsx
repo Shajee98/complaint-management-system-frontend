@@ -209,16 +209,16 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
     })
     console.log("deptCopy ==> ", deptCopy)
     setDepartments([...deptCopy])
-    if (user.user.user_type_id == 3)
+    if (user.user.user_type_id == 3 || user.user.user_type_id == 1)
     {
-      // setSelectedDept({
-      //   id: user.user.department.id,
-      //   value: user.user.department.name,
-      //   label: user.user.department.name.toUpperCase()
-      // })
+      setSelectedDept({
+        id: user.user.department.id,
+        value: user.user.department.name,
+        label: user.user.department.name.toUpperCase()
+      })
     }
     else {
-      // setSelectedDept(deptCopy[0])
+      setSelectedDept(deptCopy[0])
     }
     fetchStaffs(deptCopy[0].id)
     console.log("departments ==> ", departments)
@@ -240,14 +240,14 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
   setStaffs([...staffsCopy])
   if (user.user.user_type_id == 3)
   {
-    // setSelectedStaff({
-    //   id: user.user.id,
-    //   value: user.user.first_name + " " + user.user.last_name,
-    //   label: user.user.first_name.toUpperCase() + " " +  user.user.last_name.toUpperCase()
-    // })
+    setSelectedStaff({
+      id: user.user.id,
+      value: user.user.first_name + " " + user.user.last_name,
+      label: user.user.first_name.toUpperCase() + " " +  user.user.last_name.toUpperCase()
+    })
   }
   else {
-    // setSelectedStaff(staffsCopy[0])
+    setSelectedStaff(staffsCopy[0])
   }
   return staffsCopy
   }
@@ -389,10 +389,10 @@ const fetchComplaintTypes = async () => {
           {descriptionDD ? <DescriptionDD setDescription={setDescription}/> : null}
 
         </div>
-        {<DropDown value={selectedDept} label='Department' styles={FormSelectStyle} options={departments} onChange={handleDepartmentChange} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
+        {<DropDown value={selectedDept} label='Department' styles={FormSelectStyle} options={departments} onChange={handleDepartmentChange} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3 || getFromStorage(LocalStorageKeys.USER).user.user_type_id == 1}/>}
         {<DropDown value={selectedStaff} label='Staff' styles={FormSelectStyle} options={staffs} onChange={handleStaffChange} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
         {selectedStatus && <DropDown value={selectedStatus} label='Status' styles={StatusStyle} options={statuses} onChange={handleStatusChange} defaultValue={selectedStatus}/>}
-        {selectedType && <DropDown value={selectedType} label='Type' styles={StatusStyle} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id != 2} options={complaintTypes} onChange={handleComplaintTypeChange} defaultValue={selectedType}/>}
+        {selectedType && <DropDown value={selectedType} label='Type' styles={FormSelectStyle} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id != 2} options={complaintTypes} onChange={handleComplaintTypeChange} defaultValue={selectedType}/>}
         {/* [{value: 'open', label: 'Open', color: '#FF5733'}, {value: 'resolved', label: 'Resolved', color: '#00FF00'}, {value: 'in progress', label: 'In Progress', color: '#FFD700'}, {value: 'resolved', label: 'Resolved', color: '#00FF00'},{value: 'cancelled', label: 'Cancelled', color: '#008000'}] */}
         <div className='attachments-container'>
           <label htmlFor="attachments">Attachments</label>

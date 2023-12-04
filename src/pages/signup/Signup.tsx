@@ -158,6 +158,7 @@ const Signup = () => {
           password,
           user_type_id: selectedUserType.id,
           department_id: selectedDept.id,
+          company_type_id: selectedCompany.id
         }).then((response) => {
           if (response.data.status.success) {
             setdm("* User has been registered successfully!");

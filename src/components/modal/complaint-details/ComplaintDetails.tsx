@@ -11,6 +11,7 @@ import { getAllDepartments, getAllDeptStaffs, getAllStatuses, getComplaintById, 
 import { API_URL } from '../../../../utils/apiConfig'
 import { LocalStorageKeys, getFromStorage } from '../../../../utils/localStorage'
 import DescriptionDD from '../../description-dropdown/DescriptionDD'
+import FormTextArea from '../../form-textarea/FormTextArea'
 
 interface Props {
   onClose: () => void
@@ -33,9 +34,10 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
   const [selectedStatus, setSelectedStatus] = useState<any>()
   const [complaintTypes, setComplaintTypes] = useState<{id: number, value: string, label: string}[]>()
   const [selectedType, setSelectedComplaintType] = useState<any>()
-  const descriptionRef = createRef<HTMLInputElement>()
+  const descriptionRef = createRef<HTMLTextAreaElement>()
   const descriptionContainerRef = createRef<HTMLDivElement>()
   const [descriptionDD, setDescriptionDD] = useState(false)
+  const [dataFetched, setDataFetched] = useState(false)
 
   const handleDepartmentChange = (option: any) => {
     console.log("selectedDept ===> ", option)
@@ -160,7 +162,10 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
   })
   console.log("staffsCopy ==> ", staffsCopy)
   setStaffs([...staffsCopy])
-  // setSelectedStaff(staffsCopy[0])
+  if (dataFetched == true)
+  {
+    setSelectedStaff(staffsCopy[0])
+  }
   console.log("selectedDept ====> ", selectedDept)
   console.log("selectedStaff ====> ", selectedStaff)
   return staffsCopy
@@ -257,6 +262,7 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
           ))
           console.log("attachmentsRetrieved ==> ", attachmentsRetrieved)
           setPreviews([...attachmentsRetrieved])
+          setDataFetched(true)
         }
       })
       
@@ -375,8 +381,9 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
           disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 1}
         />
         <div ref={descriptionContainerRef} className='description-wrapper'>
-          <FormInput
+          <FormTextArea
             ref={descriptionRef}
+            type="text"
             label="Description"
             value={description}
             name="name"
@@ -385,8 +392,7 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
             onFocus={() => handleFocus()}
             // onBlur={() => setDescriptionDD(false)}
             placeholder="Please enter complaint description"
-          disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 1}
-          />
+            disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 1}         />
           {descriptionDD ? <DescriptionDD setDescription={setDescription}/> : null}
 
         </div>
@@ -394,7 +400,7 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
         {<DropDown value={selectedDept} label='Department' styles={FormSelectStyle} options={departments} onChange={handleDepartmentChange} defaultValue={selectedDept} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3 || getFromStorage(LocalStorageKeys.USER).user.user_type_id == 1}/>}
         {<DropDown value={selectedStaff} label='Staff' styles={FormSelectStyle} options={staffs} onChange={handleStaffChange} defaultValue={selectedStaff} disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}/>}
         {selectedStatus && <DropDown value={selectedStatus} label='Status' styles={StatusStyle} options={statuses} onChange={handleStatusChange} defaultValue={selectedStatus}/>}
-        {selectedType && <DropDown value={selectedType} label='Type' styles={StatusStyle} options={complaintTypes} onChange={handleComplaintTypeChange} defaultValue={selectedType}/>}
+        {selectedType && <DropDown value={selectedType} label='Type' disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id != 2} styles={FormSelectStyle} options={complaintTypes} onChange={handleComplaintTypeChange} defaultValue={selectedType}/>}
         <div className='attachments-container'>
           <label htmlFor="attachments">Attachments</label>
           <input type='file' className='attachment-selector' id="attachments" onChange={(e) => handleAttachments(e)}/>

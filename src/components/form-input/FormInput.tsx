@@ -48,7 +48,7 @@ const FormInput = forwardRef<HTMLInputElement, InputProps>(({error, label, name,
       {isPasswordFeild && type == "password" && <IoEye className="password-icon" color="#3373B1" onClick={() => toggleType("text")}/>}
       {isPasswordFeild && type == "text" && <IoEyeOff className="password-icon" color="#3373B1" onClick={() => toggleType("password")}/>}
       </div>
-      {value.toString().length == 0 && error ? <p className="error">This feild is required</p> : <p className="error"></p>}
+      {value?.toString().length == 0 && error ? <p className="error">This feild is required</p> : <p className="error"></p>}
     </div>
   )
 }
