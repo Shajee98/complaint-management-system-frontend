@@ -87,6 +87,7 @@ const Complaints = () => {
     setComplaints(complaintsCopy);
     setFromDate("");
     setToDate("");
+    setPresetDate(presetDates[0])
     // setPage(previousPage);
     // setRowsPerPage(rowsPerPagePrevious);
   };

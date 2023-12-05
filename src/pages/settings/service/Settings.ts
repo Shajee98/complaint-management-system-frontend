@@ -10,6 +10,6 @@ export const updateWhatsappMessageFormat = (message: string) => {
     return catchAxiosError(postRequest(`${API_URL}/whatsapp/set/whatsapp-message`, {message: message}))
 }
 
-export const getAllUsers = () => {
-  return catchAxiosError(getRequest(`${API_URL}/users/get/all`))
+export const getAllUsers = (user_department_id: any) => {
+  return catchAxiosError(getRequest(`${API_URL}/users/get/all?user_department_id=${user_department_id}`))
 }

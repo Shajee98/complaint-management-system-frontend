@@ -67,7 +67,8 @@ const Settings = () => {
 
   const fetchUsers = async () => {
     try {
-        const response = await getAllUsers()
+        const user = getFromStorage(LocalStorageKeys.USER)
+        const response = await getAllUsers(user.user.department_id)
         setUsers(response.data.data.users)
         // setUsersCopy(response.data.data.users.rows)
     } catch (error) {
