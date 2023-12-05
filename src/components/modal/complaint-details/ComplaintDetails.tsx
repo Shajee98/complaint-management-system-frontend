@@ -41,12 +41,20 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
 
   const handleDepartmentChange = (option: any) => {
     console.log("selectedDept ===> ", option)
+    if (option.value == "none")
+    {
+      setSelectedDept(null)
+    }
       setSelectedDept(option)
       fetchStaffs(option.id)
     }
   
     const handleStaffChange = (option: any) => {
       console.log("selectedStaff ==> ", option)
+      if (option.value == "none")
+      {
+        setSelectedStaff(null)
+      }
       setSelectedStaff(option)
     }
   
@@ -134,33 +142,38 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
 
   const fetchDepartments = async () => {
     const response = await getAllDepartments()
-    const deptCopy = response.data.data.departments.map((department: any) => {
+    let deptCopy: any[] = [{ id: "", value: "none", label: "None" }];
+    const deptRetrieved = response.data.data.departments.map((department: any) => {
         return {
             id: department.id,
             value: department.name,
             label: department.name.toUpperCase()
         }
     })
+    deptCopy = deptCopy.concat(deptRetrieved);
     console.log("deptCopy ==> ", deptCopy)
     setDepartments([...deptCopy])
     // setSelectedDept(deptCopy[0])
-    fetchStaffs(deptCopy[0].id)
+    // fetchStaffs(deptCopy[0].id)
     console.log("departments ==> ", departments)
     return deptCopy
   }  
 
   const fetchStaffs = async (department_id: any) => { 
-
-    // console.log("departments[0].id ===> ", departments[0].id)
-    const response = await getAllDeptStaffs(department_id)
-    const staffsCopy = response.data.data.staffs.map((staff: any) => {
-      return {
-          id: staff.id,
-          value: staff.first_name + " " + staff.last_name,
-          label: staff.first_name.toUpperCase() + " " +  staff.last_name.toUpperCase()
-      }
-  })
-  console.log("staffsCopy ==> ", staffsCopy)
+    let staffsCopy: any[] = [{ id: "", value: "none", label: "None" }];
+    if (department_id != "")
+    {
+      const response = await getAllDeptStaffs(department_id)
+      const staffsRetrieved = response.data.data.staffs.map((staff: any) => {
+        return {
+            id: staff.id,
+            value: staff.first_name + " " + staff.last_name,
+            label: staff.first_name.toUpperCase() + " " +  staff.last_name.toUpperCase()
+        }
+    })
+    staffsCopy = staffsCopy.concat(staffsRetrieved);
+    console.log("staffsCopy ==> ", staffsCopy)
+    }
   setStaffs([...staffsCopy])
   if (dataFetched == true)
   {
@@ -220,7 +233,10 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
   })
   console.log("statusesCopy ==> ", statusesCopy)
   setStatuses([...statusModified])
-  setSelectedStatus(statusesCopy[0])
+  if (dataFetched == true)
+  {
+    setSelectedStatus(statusesCopy[0])
+  }
   console.log("departments ==> ", departments)
   return statusesCopy
   }
@@ -241,12 +257,12 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
             id: data?.department?.id,
             value: data?.department?.name,
             label: data?.department?.name.toUpperCase()
-          }) : setSelectedDept(null)
+          }) : setSelectedDept({ id: "", value: "none", label: "None" })
           data?.user_id !== null ? setSelectedStaff({
             id: data?.user?.id,
             value: data?.user?.first_name + " " + data?.user?.last_name,
             label: data?.user?.first_name.toUpperCase() + " " +  data?.user?.last_name.toUpperCase()
-          }) : setSelectedStaff(null)
+          }) : setSelectedStaff({ id: "", value: "none", label: "None" })
           setSelectedStatus({
             id: data?.complaint_status.id,
             value: data?.complaint_status.name,
@@ -263,6 +279,7 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
           console.log("attachmentsRetrieved ==> ", attachmentsRetrieved)
           setPreviews([...attachmentsRetrieved])
           setDataFetched(true)
+          fetchStaffs(data?.department?.id)
         }
       })
       
@@ -392,7 +409,7 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
             onFocus={() => handleFocus()}
             // onBlur={() => setDescriptionDD(false)}
             placeholder="Please enter complaint description"
-            disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 1}         />
+            disabled={getFromStorage(LocalStorageKeys.USER).user.user_type_id == 1 || getFromStorage(LocalStorageKeys.USER).user.user_type_id == 3}         />
           {descriptionDD ? <DescriptionDD setDescription={setDescription}/> : null}
 
         </div>

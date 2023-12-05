@@ -31,6 +31,7 @@ const FormTextArea = forwardRef<HTMLTextAreaElement, InputProps>(({error, label,
         onChange={onChange}
         rows={3}
         ref={ref}
+        disabled={disabled}
       />
       {value.toString().length == 0 && error ? <p className="error">This feild is required</p> : <p className="error"></p>}
     </div>

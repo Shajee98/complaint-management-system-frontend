@@ -9,8 +9,7 @@ import { FormSelectStyle, StatusStyle } from '../../drop-down/ReactSelectStyles'
 import SecondaryButton from '../../secondary-button/SecondaryButton'
 import { getAllDepartments, getComplaintTypes } from '../../../components/modal/create-complaint/services/CreateComplaint'
 import { getAllDeptStaffs, getAllStatuses } from './services/CreateComplaint'
-import { postRequest, postRequestFormData } from '../../../../utils/auth'
-import { useNavigate } from 'react-router-dom'
+import { postRequestFormData } from '../../../../utils/auth'
 import { LocalStorageKeys, getFromStorage } from '../../../../utils/localStorage'
 import DescriptionDD from '../../description-dropdown/DescriptionDD'
 import FormTextArea from '../../form-textarea/FormTextArea'
@@ -106,12 +105,20 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
   }
   const handleDepartmentChange = (option: any) => {
   console.log("selectedDept ===> ", option)
+    if (option.value == "none")
+    {
+      setSelectedDept(null)
+    }
     setSelectedDept(option)
     fetchStaffs(option.id)
   }
 
   const handleStaffChange = (option: any) => {
     console.log("selectedStaff ==> ", option)
+    if (option.value == "none")
+    {
+      setSelectedStaff(null)
+    }
     setSelectedStaff(option)
   }
 
@@ -200,13 +207,15 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
   const fetchDepartments = async () => {
    const user = getFromStorage(LocalStorageKeys.USER)
     const response = await getAllDepartments()
-    const deptCopy = response.data.data.departments.map((department: any) => {
+    let deptCopy: any[] = [{ id: "", value: "none", label: "None" }];
+    const deptRetrieved = response.data.data.departments.map((department: any) => {
         return {
             id: department.id,
             value: department.name,
             label: department.name.toUpperCase()
         }
     })
+    deptCopy = deptCopy.concat(deptRetrieved);
     console.log("deptCopy ==> ", deptCopy)
     setDepartments([...deptCopy])
     if (user.user.user_type_id == 3 || user.user.user_type_id == 1)
@@ -216,11 +225,12 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
         value: user.user.department.name,
         label: user.user.department.name.toUpperCase()
       })
+    fetchStaffs(user.user.department.id)
     }
     else {
       setSelectedDept(deptCopy[0])
+      fetchStaffs(deptCopy[0].id)
     }
-    fetchStaffs(deptCopy[0].id)
     console.log("departments ==> ", departments)
     return deptCopy
   }  
@@ -228,14 +238,20 @@ const CreateComplaint = ({onClose, fetchComplaints}: Props) => {
   const fetchStaffs = async (department_id: any) => { 
 
    const user = getFromStorage(LocalStorageKeys.USER)
-    const response = await getAllDeptStaffs(department_id)
-    const staffsCopy = response.data.data.staffs.map((staff: any) => {
-      return {
-          id: staff.id,
-          value: staff.first_name + " " + staff.last_name,
-          label: staff.first_name.toUpperCase() + " " +  staff.last_name.toUpperCase()
-      }
-  })
+   let staffsCopy: any[] = [{ id: "", value: "none", label: "None" }];
+   if (department_id != "")
+   {
+      const response = await getAllDeptStaffs(department_id)
+      const staffsRetrieved = response.data.data.staffs.map((staff: any) => {
+        return {
+            id: staff.id,
+            value: staff.first_name + " " + staff.last_name,
+            label: staff.first_name.toUpperCase() + " " +  staff.last_name.toUpperCase()
+        }
+    })
+    console.log("staffsRetrieved ==> ", staffsRetrieved)
+    staffsCopy = staffsCopy.concat(staffsRetrieved);
+    }
   console.log("staffsCopy ==> ", staffsCopy)
   setStaffs([...staffsCopy])
   if (user.user.user_type_id == 3)

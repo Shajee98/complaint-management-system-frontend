@@ -7,11 +7,14 @@ import { BsCheckCircleFill,BsXCircleFill,BsExclamationCircleFill } from "react-i
 import ReactPaginate from 'react-paginate';
 import { getAllStatuses } from './service/MessageStatus';
 import './MessageStatus.scss'
+import Heading2 from '../../components/typography/heading-2/Heading2';
 
 
 const MessageStatus = () => {
     const [pageNumber, setPageNumber] = useState(0);
     const [messagesStatuses, setMessagesStatuses] = useState<any[]>([])
+    const [delivered, setDelivered] = useState(0);
+    const [notDelivered, setNotDelivered] = useState(0);
 
     const usersPerPage = 10;
     const pagesVisited = pageNumber * usersPerPage;
@@ -26,6 +29,20 @@ const MessageStatus = () => {
     const fetchStatuses = async () => {
         try {
             const response = await getAllStatuses()
+            let delivered = 0
+            let not_delivered = 0
+            response.data.data.forEach((message: any) => {
+                if (message.messageStatus == 1)
+                {
+                    not_delivered += 1
+                }
+                if (message.messageStatus == 2)
+                {
+                    delivered += 1
+                }
+            })
+            setDelivered(delivered)
+            setNotDelivered(not_delivered)
             setMessagesStatuses(response.data.data)
             // setUsersCopy(response.data.data.users.rows)
         } catch (error) {
@@ -57,7 +74,10 @@ const MessageStatus = () => {
           }`}
         >
             <div className="message-status-container">
+                <div className='heading-container'>
                 <Heading1 text="Message Tracking" />
+                <Heading2 className='success-rate' text={`Success Rate ${(delivered / (delivered + notDelivered))*100} %`}/>
+                </div>
                 <table className="users-table">
               <tr className="table-header">
                 <th>Customer Number</th>

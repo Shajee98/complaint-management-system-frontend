@@ -58,6 +58,11 @@ const Complaints = () => {
   const presetDates = [
     {
       id: 0,
+      value: "none",
+      label: "None"
+    },
+    {
+      id: 1,
       value: "1 week",
       label: "1 Week"
     },
@@ -266,6 +271,7 @@ const Complaints = () => {
   useEffect(() => {
     fetchDepartments();
     fetchStatuses();
+    setPresetDate(presetDates[0])
     // fetchComplaints(selectedDept?.id, 0)
   }, []);
 
@@ -276,8 +282,17 @@ const Complaints = () => {
   };
 
   const handlePresetDateChange = (option: any) => {
-    setPresetDate(option)
-    onPresetDateChange(option)
+    if (option.value == "none")
+    {
+      setPresetDate(option)
+      setToDate("")
+      setFromDate("")
+      return
+    }
+    else{
+      setPresetDate(option)
+      onPresetDateChange(option)
+    }
   }
 
   const onPresetDateChange = (option: any) => {
@@ -323,10 +338,10 @@ const Complaints = () => {
             }
           }
         }
-        setFromDate(`${year_1}-${month_1}-${day_1}`)
-        setToDate(`${date_1.getFullYear()}-${date_1.getMonth()+1}-${date_1.getDate() < 10 ? '0' : null}${date_1.getDate()}`)
-        break;
-        case "2 week":
+          setFromDate(`${year_1}-${month_1}-${day_1}`)
+          setToDate(`${date_1.getFullYear()}-${date_1.getMonth()+1}-${date_1.getDate() < 10 ? '0' : null}${date_1.getDate()}`)
+          break;
+      case "2 week":
           const date_2 = new Date()
           let day_2
           let month_2
@@ -370,19 +385,35 @@ const Complaints = () => {
           setFromDate(`${year_2}-${month_2}-${day_2}`)
           setToDate(`${date_2.getFullYear()}-${date_2.getMonth()+1}-${date_2.getDate() < 10 ? '0' : null}${date_2.getDate()}`)
           break;
-          case "1 month":
+      case "1 month":
             const date_3 = new Date()
-            const day_3 = date_3.getDate()
+            const thirty_days_month = [4,6,9,11]
+            let day_3 = date_3.getDate()
             let month_3 = date_3.getMonth() + 1
             let year_3 = date_3.getFullYear()
+            if (thirty_days_month.some((month) => month == month_3 - 1))
+            {
+              day_3 = date_3.getDate()
+            }
+            else {
+              day_3 = date_3.getDate() + 1
+            }
             if (month_3 - 1 < 1)
             {
               year_3 = date_3.getFullYear() - 1
             }
-
             setFromDate(`${year_3}-${month_3 - 1}-${day_3 < 10 ? '0' : null}${day_3}`)
             setToDate(`${date_3.getFullYear()}-${month_3}-${date_3.getDate() < 10 ? '0' : null}${date_3.getDate()}`)
             break;
+      case "1 year":
+            const date_4 = new Date()
+            let day_4 = date_4.getDate()
+            let month_4 = date_4.getMonth() + 1
+            let year_4 = date_4.getFullYear()
+
+            setFromDate(`${year_4 - 1}-${month_4}-${day_4 < 10 ? '0' : null}${day_4}`)
+            setToDate(`${date_4.getFullYear()}-${month_4}-${date_4.getDate() < 10 ? '0' : null}${date_4.getDate()}`)
+            break;    
       default:
         break;
     }
@@ -535,13 +566,14 @@ const Complaints = () => {
                 {/* <div className="preset-date">
 
                 </div> */}
-                {/* <DropDown
+                <DropDown
                   label="Preset Dates"
                   styles={FilterSelectStyle}
                   options={presetDates}
                   onChange={handlePresetDateChange}
                   value={presetDate}
-                /> */}
+                  defaultValue={presetDates[0]}
+                />
                 <div className="date-filter-wrapper">
                   <div className="individual-date-filter">
                     <label className="date-filter-label">From</label>
