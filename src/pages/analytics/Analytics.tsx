@@ -84,6 +84,12 @@ const Analytics = () => {
       const fetchWhatsappResponsesCount = async () => {
         try {
           const whatsappResponsesCounts = await getWhatsappResponsesCount()
+          var yes = Number(whatsappResponsesCounts.data.data.responses[0].positive)
+          var no = Number(whatsappResponsesCounts.data.data.responses[0].negetive)
+          var yespct = ((whatsappResponsesCounts.data.data.responses[0].positive/(yes+no))*100).toString()
+          var nopct = ((whatsappResponsesCounts.data.data.responses[0].negetive/(yes+no))*100).toString()
+          console.log(yespct)
+          console.log(nopct)
           setWhatsappResponses({
             labels: [
               'Yes',
@@ -91,8 +97,8 @@ const Analytics = () => {
             ],
             datasets: [
               {
-                label: 'Total: ',
-                data: [whatsappResponsesCounts.data.data.responses[0].positive, whatsappResponsesCounts.data.data.responses[0].negetive],
+                label: '% ',
+                data: [yespct, nopct],
                 backgroundColor: [
                   '#55C5D1',
                   '#F16222',

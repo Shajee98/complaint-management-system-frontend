@@ -39,7 +39,6 @@ const Complaints = () => {
     { id: number; value: string; label: string; color: string }[]
   >([]);
   const [selectedStatus, setSelectedStatus] = useState<any>();
-  const [statusClass, setStatusClass] = useState<any>("");
   const [complaintId, setComplaintId] = useState<number>(0);
   const [complaintType, setComplaintType] = useState(1);
   const [fromDate, setFromDate] = useState("");
@@ -310,12 +309,23 @@ const Complaints = () => {
           year_1 = date_1.getFullYear()
         }
         else {
+          console.log("From date less than 1")
           const thirty_days_month = [4,6,9,11]
-          const is_thirty = thirty_days_month.some((month) => month == date_1.getMonth())
+          const is_thirty = thirty_days_month.some((month) => month == date_1.getMonth() + 1)
+          console.log("is_thirty ====> ", is_thirty )
           if (is_thirty)
           {
-            day_1 = 30 + date_1.getDate() - 7
-            month_1 = date_1.getMonth() - 1
+            console.log("Is thirty")
+            month_1 = date_1.getMonth()
+            day_1 = date_1.getDate() - 7
+            if (day_1 == 0)
+            {
+              day_1 = 31
+            }
+            else if (day_1 < 0)
+            {
+              day_1 = 31 + day_1
+            }
             if (month_1 < 1)
             {
               year_1 = date_1.getFullYear() - 1
@@ -327,8 +337,17 @@ const Complaints = () => {
           }          
           else 
           {
-            day_1 = 31 + date_1.getDate() - 7
-            month_1 = date_1.getMonth() - 1
+            day_1 = date_1.getDate() - 7
+            month_1 = date_1.getMonth()
+            console.log("day_2 ===> ", day_1)
+            if (day_1 == 0)
+            {
+              day_1 = 30
+            }
+            else if (day_1 < 0 )
+            {
+              day_1 = 30 + day_1
+            }
             if (month_1 < 1)
             {
               year_1 = date_1.getFullYear() - 1
@@ -339,14 +358,15 @@ const Complaints = () => {
             }
           }
         }
-          setFromDate(`${year_1}-${month_1}-${day_1}`)
-          setToDate(`${date_1.getFullYear()}-${date_1.getMonth()+1}-${date_1.getDate() < 10 ? '0' : null}${date_1.getDate()}`)
+          setFromDate(`${year_1}-${month_1+1}-${day_1 < 10 ? `0${day_1}` : day_1}`)
+          setToDate(`${date_1.getFullYear()}-${date_1.getMonth()+1}-${date_1.getDate() < 10 ? `0${date_1.getDate()}` : date_1.getDate()}`)
           break;
       case "2 week":
           const date_2 = new Date()
           let day_2
           let month_2
           let year_2
+          console.log("date_2 ==> ", date_2)
           if (date_2.getDate() - 14 >= 1)
           {
             day_2 = date_2.getDate() - 14
@@ -354,12 +374,23 @@ const Complaints = () => {
             year_2 = date_2.getFullYear()
           }
           else {
+          console.log("From date less than 1")
             const thirty_days_month = [4,6,9,11]
-            const is_thirty = thirty_days_month.some((month) => month == date_2.getMonth())
+            const is_thirty = thirty_days_month.some((month) => month == date_2.getMonth() + 1)
+          console.log("is_thirty ====> ", is_thirty )
             if (is_thirty)
             {
-              day_2 = 30 + date_2.getDate() - 14
-              month_2 = date_2.getMonth() - 1
+              month_2 = date_2.getMonth()
+              console.log("Is thirty")
+              day_2 = date_2.getDate() - 14
+              if (day_2 == 0)
+              {
+                day_2 = 31
+              }
+              else if (day_2 < 0)
+              {
+                day_2 = 31 + day_2
+              }
               if (month_2 < 1)
               {
                 year_2 = date_2.getFullYear() - 1
@@ -371,8 +402,18 @@ const Complaints = () => {
             }          
             else 
             {
-              day_2 = 31 + date_2.getDate() - 14
-              month_2 = date_2.getMonth() - 1
+          console.log("Isn't thirty")
+              day_2 = date_2.getDate() - 14
+              month_2 = date_2.getMonth()
+              console.log("day_2 ===> ", day_2)
+              if (day_2 == 0)
+              {
+                day_2 = 30
+              }
+              else if (day_2 < 0 )
+              {
+                day_2 = 30 + day_2
+              }
               if (month_2 < 1)
               {
                 year_2 = date_2.getFullYear() - 1
@@ -383,8 +424,8 @@ const Complaints = () => {
               }
             }
           }
-          setFromDate(`${year_2}-${month_2}-${day_2}`)
-          setToDate(`${date_2.getFullYear()}-${date_2.getMonth()+1}-${date_2.getDate() < 10 ? '0' : null}${date_2.getDate()}`)
+          setFromDate(`${year_2}-${month_2}-${day_2 < 10 ? `0${day_2}` : day_2}`)
+          setToDate(`${date_2.getFullYear()}-${date_2.getMonth()+1}-${date_2.getDate() < 10 ? `0${date_2.getDate()}` : date_2.getDate()}`)
           break;
       case "1 month":
             const date_3 = new Date()
@@ -403,8 +444,8 @@ const Complaints = () => {
             {
               year_3 = date_3.getFullYear() - 1
             }
-            setFromDate(`${year_3}-${month_3 - 1}-${day_3 < 10 ? '0' : null}${day_3}`)
-            setToDate(`${date_3.getFullYear()}-${month_3}-${date_3.getDate() < 10 ? '0' : null}${date_3.getDate()}`)
+            setFromDate(`${year_3}-${month_3 - 1}-${day_3 < 10 ? `0${day_3}` : day_3}`)
+            setToDate(`${date_3.getFullYear()}-${month_3}-${date_3.getDate() < 10 ? `0${date_3.getDate()}` : date_3.getDate()}`)
             break;
       case "1 year":
             const date_4 = new Date()
@@ -412,8 +453,8 @@ const Complaints = () => {
             let month_4 = date_4.getMonth() + 1
             let year_4 = date_4.getFullYear()
 
-            setFromDate(`${year_4 - 1}-${month_4}-${day_4 < 10 ? '0' : null}${day_4}`)
-            setToDate(`${date_4.getFullYear()}-${month_4}-${date_4.getDate() < 10 ? '0' : null}${date_4.getDate()}`)
+            setFromDate(`${year_4 - 1}-${month_4}-${day_4 < 10 ? `0${day_4}` : day_4}`)
+            setToDate(`${date_4.getFullYear()}-${month_4}-${date_4.getDate() < 10 ? `0${date_4.getDate()}` : date_4.getDate()}`)
             break;    
       default:
         break;
@@ -447,6 +488,20 @@ const Complaints = () => {
     const formattedDate = timestamp.format('DD/MM/YYYY HH:mm')
     return formattedDate;
   };
+
+  const getInvoiceNo = (description: any) => {
+    const regex = /\*\*(.*?)\*\*/g;
+    const matches = description.match(regex);
+    if (matches)
+    {
+      const extractedContent = matches.map((match: any) => match.replace(/\*\*/g, ''));
+      return extractedContent
+    }
+    else 
+    {
+      return '-'
+    }
+  }
 
   return (
     <>
@@ -628,6 +683,7 @@ const Complaints = () => {
                 <th>Complaint ID</th>
                 <th>Phone number</th>
                 <th>Customer Name</th>
+                <th>Invoice No.</th>
                 <th>Reported on</th>
                 <th>Assigned to</th>
                 <th>Created By</th>
@@ -645,6 +701,7 @@ const Complaints = () => {
                     <td>
                       {complaint.customerName ? complaint.customerName : "-"}
                     </td>
+                    <td>{getInvoiceNo(complaint.description)}</td>
                     <td>{reportedOn(complaint.createdAt)}</td>
                     <td>
                       {complaint.user

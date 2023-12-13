@@ -142,7 +142,7 @@ const Settings = () => {
         <PrimaryButton className={`${files != undefined ? '' : 'disabled'} primary-left-aligned`} text='Save' onClick={submitHandler}/>
       </div>
       <div className='card-container'>
-        <Heading2 className='heading2-right-aligned' text='Whatsapp Message Format' />
+        <Heading2 className='heading2-right-aligned whatsapp-format-heading' text='Whatsapp Message Format' />
         <div className='card-body'>
             <div className='format-container'>
                 <input ref={messageRef} type='text' disabled={editMessage} className='whatsapp-format' value={message} onChange={(e) => setMessage(e.target.value)}/>

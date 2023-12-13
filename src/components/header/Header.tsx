@@ -23,7 +23,7 @@ const Header = () => {
       </div>
       <div className='profile-avatar' onClick={() => setVisible(!visible)}>
         {getFromStorage(LocalStorageKeys.USER).user.first_name + " " + getFromStorage(LocalStorageKeys.USER).user.last_name}
-        <BsFillPersonFill />
+        <BsFillPersonFill className='user-icon'/>
         {/* {visible ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />} */}
         <FiLogOut className='logout-button' onClick={logout}/>
       </div>

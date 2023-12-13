@@ -64,7 +64,7 @@
 }
 
 .individual-date-filter {
-    display: flex;
+    display: block;
     gap: 5px;
     color: white;
     font-size: 18px;
@@ -72,17 +72,29 @@
     align-items: center;
 
 }
+.individual-daterange-filter {
+    display: block;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+
+}
+.range {
+    padding-right: 30px;
+}
 
 .date-filter-wrapper {
     display: flex;
     gap: 10px;
-    align-items: center;
+    align-items: last baseline;
 }
 
 .date-filter-label {
-    font-family: Poppins;
     font-weight: 600;
-    margin-right: 15px;
+    font-size: 14px;
+    color: #344054;
+    display: block;
+    margin-bottom: 8px;
 }
 
 .date-selector {
@@ -115,7 +127,7 @@
 }
 
 .complaint-toggle {
-    width: 10vw;
+    width: 5vw;
 }
 
 .filterandsearch {
@@ -183,9 +195,8 @@
 }
 
 .inactive {
-    background-color: white;
-    color: #3373B1;
-    border: 1px solid #3373B1;
+    background-color: #dddddd;
+    color: gray;
 }
 
 .chart-container {

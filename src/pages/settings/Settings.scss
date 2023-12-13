@@ -91,6 +91,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 35px;
 }
 
 .format-body {
@@ -103,4 +104,8 @@
     flex-direction: column;
     gap: 10px;
     margin-bottom: 10px;
+}
+
+.whatsapp-format-heading {
+    margin-bottom: 50px;
 }
