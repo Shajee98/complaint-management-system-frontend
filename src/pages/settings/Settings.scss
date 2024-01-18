@@ -1,0 +1,106 @@
+.settings-child-container {
+    width: auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    // column-gap: 50px;
+}
+
+.settings-parent-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.users-table {
+    border: 1px solid grey;
+    border-radius: 5px;
+    // height: 60vh;
+    // display: flex;
+    // justify-content: flex-start;
+    .table-header {
+        background-color: #F8F8FB;
+        // height: 20px;
+    }
+
+    .table-row {
+        text-align: center;
+        font-size: 14px;
+        // height: 10px;
+        td {
+            align-self: center;
+        }
+    }
+}
+
+.card-container {
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+    margin: 20px 0px 0px 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    // gap: 20px;
+    // height: max-content;
+    // width: 50%;
+    padding: 10px 20px 20px 20px;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.card-mainheading {
+    font-size: 20px;
+}
+
+.whatsapp-format {
+    height: 30px;
+    padding-left: 10px;
+    background-color: transparent;
+    border: none;
+    width: 90%;
+    overflow-x: scroll;
+}
+
+.bulk-msg-subheading {
+    font-size: 16px;
+}
+
+.file-selector {
+    display: none;
+}
+
+.whatsapp-msgformat-container {
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+    margin: 20px 0px 0px 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    // gap: 20px;
+    height: max-content;
+    width: 50%;
+    padding: 10px;
+}
+
+.edit-icon {
+    color: #3373B1;
+    cursor: pointer;
+}
+
+.format-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.format-body {
+    width: 90%;
+    overflow-y: scroll;
+}
+
+.upload-file-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+}

@@ -1,0 +1,46 @@
+.signup-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0px 40px;
+}
+
+.signup-header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.signup-footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.login-text {
+    font-size: 14px;
+}
+
+.signup-message-text {
+    font-size: 14px;
+    font-weight: bold;
+    color: darkcyan;
+}
+
+.login-link {
+    text-decoration: underline;
+    color: #3373B1;
+    cursor: pointer;
+    font-weight: 500;
+}
+.signup-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 50px;
+    grid-auto-rows: minmax(100px, auto);
+}

@@ -1,0 +1,49 @@
+.input-wrapper {
+    // margin-top: 20px;
+    // position: relative;
+    // top: 50px;
+  }
+  
+  /* Input style */
+  
+  /* Label */
+  label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #344054;
+    display: block;
+    margin-bottom: 8px;
+  }
+  
+  /* Input field */
+  .form-text-area {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.3em;
+    width: 250px;
+    color: #344054;
+    background: #ffffff;
+    border: 2px solid #d0d5dd;
+    box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+    border-radius: 8px;
+    padding: 10px 14px;
+
+    &::placeholder {
+        font-size: 16px;
+        font-weight: 400;
+        color: #667085;
+      }
+      &:focus {
+        outline: none !important;
+        border: 2px solid #3373B1;
+      }
+}
+  
+  .error {
+    color: #db4437;
+    font-size: 14px;
+    font-weight: 400;
+    margin-left: 12px;
+    margin-top: 4px;
+    height: 10px;
+  }

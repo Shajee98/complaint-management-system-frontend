@@ -1,0 +1,25 @@
+.message-status-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    padding: 10px;
+    gap: 50px;
+}
+
+.icon{
+    height: 20px;
+    width: 20px;
+}
+
+.heading-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.success-rate {
+    color: #3373B1;
+    font-size: 16px;
+}

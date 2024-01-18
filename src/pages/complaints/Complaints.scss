@@ -1,0 +1,276 @@
+.complaints-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    padding: 10px;
+    gap: 50px;
+}
+
+.upper-half {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.type-and-add {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    align-self: flex-end;
+}
+
+.searchbar {
+    width: 400px;
+    border: 2px solid grey;
+    border-radius: 20px;
+    height: 30px;
+    padding-left: 10px;
+    &:focus {
+        outline: none !important;
+        border: 2px solid #3373B1;
+    }
+}
+
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: min-content;
+}
+
+.search-icon {
+    position: absolute;
+    color: grey;
+    right: 10px;
+    cursor: pointer;
+}
+
+.complaint-toggle-container {
+    display: flex;
+    // gap: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.date-filter-container {
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    display: flex;
+}
+
+.individual-date-filter {
+    display: block;
+    gap: 5px;
+    color: white;
+    font-size: 18px;
+    justify-content: center;
+    align-items: center;
+
+}
+.individual-daterange-filter {
+    display: block;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+
+}
+.range {
+    padding-right: 30px;
+}
+
+.date-filter-wrapper {
+    display: flex;
+    gap: 10px;
+    align-items: last baseline;
+}
+
+.date-filter-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #344054;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.date-selector {
+    --tw-bg-opacity: 1;
+    background-color: white;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-right: 40px;
+    font-size: 16px;
+    --tw-text-opacity: 1;
+    // color: rgb(255 255 255 / var(--tw-text-opacity));
+    color: gray;
+    padding-left: 50px;
+    border-radius: 9px;
+    border: 1px solid gray;
+    background-image: none;
+    cursor: pointer;
+}
+
+.date-search-button {
+    width: 5vw;
+    background-color: #3373B1 !important;
+    color: #F8F8FB;
+}
+
+.date-clear-button {
+    width: 5vw;
+    background-color: #Df2000 !important;
+    color: #F8F8FB;
+}
+
+.complaint-toggle {
+    width: 5vw;
+}
+
+.filterandsearch {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 0px 50px 0px;
+    @media screen and (max-width: 999px) {
+        display: flex;
+        flex-direction: column;
+    }
+    
+}
+
+.complaints-table {
+    border: 1px solid grey;
+    border-radius: 5px;
+    // height: 60vh;
+    // display: flex;
+    // justify-content: flex-start;
+    .table-header {
+        background-color: #F8F8FB;
+        // height: 20px;
+    }
+
+    .table-row {
+        text-align: center;
+        font-size: 14px;
+        // height: 10px;
+        td {
+            align-self: center;
+        }
+
+        .action-cell {
+            display: flex;
+            width: min-content;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-left: auto;
+            margin-right: auto;
+
+            .details-icon {
+                cursor: pointer;
+            }
+            .comments-icon {
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+.add-complaint {
+    width: 50px;
+    padding: 15px 15px 15px 15px;
+    background-color: #3373B1;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.active-tab {
+    background-color: #3373B1;
+    color: white;
+}
+
+.inactive {
+    background-color: #dddddd;
+    color: gray;
+}
+
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 35%;
+    height: 35%;
+}
+
+.graph-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 50%;
+    height: 50%;
+}
+
+.graph-chart-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.left-aligned-heading {
+    align-self: flex-start;
+}
+
+.paginationBttns {
+    width: auto;
+    height: 20px;
+    list-style: none;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .paginationBttns a {
+    padding: 5px 10px 5px 10px;
+    margin: 8px;
+    border-radius: 5px;
+    border: 1px solid #3373B1;
+    color: #3373B1;
+    cursor: pointer;
+  }
+  
+  .paginationBttns a:hover {
+    color: white;
+    background-color: #3373B1;
+  }
+  
+  .paginationActive a {
+    color: white;
+    background-color: #3373B1;
+  }
+  
+  .paginationDisabled a {
+    color: white;
+    background-color: grey;
+    cursor: not-allowed;
+  }
+
+  .in-progress {
+    color: #8B8000;
+    font-weight: 700;
+  }
+
+  .resolved {
+    color: #013220;
+    font-weight: 700;
+  }
+
+  .late {
+    color: #FF5733;
+    font-weight: 700;
+  }

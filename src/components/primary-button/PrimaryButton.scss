@@ -1,0 +1,31 @@
+.primary {
+    padding: 10px;
+    background-color: #3373B1;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.primary-to-sec {
+    padding: 10px 20px;
+    background-color: #Df2000;
+}
+
+.modal-primary {
+    padding: 10px 20px;
+}
+
+.primary-left-aligned {
+    margin-left: calc(100% - 100px);   
+}
+
+.disabled {
+    cursor: not-allowed;
+}
+
+.primary-center-aligned {
+    align-self: center;
+}
