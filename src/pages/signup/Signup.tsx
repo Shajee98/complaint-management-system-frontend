@@ -11,7 +11,7 @@ import { getAllDepartments, getCompanies, getUserTypes, userSignUp } from "./ser
 import DropDown from "../../components/drop-down/DropDown";
 import { FormSelectStyle } from "../../components/drop-down/ReactSelectStyles";
 
-const Signup = () => {
+const Signup = (props: {fetchUsers: () => void}) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [departments, setDepartments] = useState<
     { id: number; value: string; label: string }[]
@@ -29,6 +29,7 @@ const Signup = () => {
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [displayMessage, setdm] = useState("");
   const [error, setError] = useState(false);
 
@@ -158,7 +159,8 @@ const Signup = () => {
           password,
           user_type_id: selectedUserType.id,
           department_id: selectedDept.id,
-          company_type_id: selectedCompany.id
+          company_type_id: selectedCompany.id,
+          email: email
         }).then((response) => {
           if (response.data.status.success) {
             setdm("* User has been registered successfully!");
@@ -170,6 +172,7 @@ const Signup = () => {
               setdm("")
             }, 5000);
             setErrorMessage("");
+            props.fetchUsers()
             // navigate("/login");
           }
         });
@@ -264,6 +267,15 @@ const Signup = () => {
                 defaultValue={selectedCompany}
                 disabled={getFromStorage(LocalStorageKeys.USER).user.company_type_id == 1}
               />}
+              <FormInput
+                isPasswordFeild={false}
+                label="Email"
+                value={email}
+                name="email"
+                error={error}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Please enter email"
+              />
             </div>
             <div className="signup-footer">
               <PrimaryButton

@@ -2,16 +2,19 @@ import { HiPencil } from 'react-icons/hi'
 import PrimaryButton from '../../components/primary-button/PrimaryButton'
 import SecondaryButton from '../../components/secondary-button/SecondaryButton'
 import Heading2 from '../../components/typography/heading-2/Heading2'
-import { LocalStorageKeys, getFromStorage } from '../../../utils/localStorage'
+import { LocalStorageKeys, getFromStorage, removeFromStorage } from '../../../utils/localStorage'
 import Header from '../../components/header/Header'
 import Navbar from '../../components/navbar/Navbar'
 import { ProgressBar } from 'react-bootstrap'
 import { useState, useEffect, useRef } from 'react'
 import { postRequestFormData } from '../../../utils/auth'
-import { getAllUsers, getWhatsappMessageFormat, updateWhatsappMessageFormat } from './service/Settings'
+import { deleteUser, getAllUsers, getWhatsappMessageFormat, updateWhatsappMessageFormat } from './service/Settings'
 import Signup from '../signup/Signup'
 import './Settings.scss'
 import ReactPaginate from 'react-paginate'
+import { FiDelete } from 'react-icons/fi'
+import { MdDelete } from 'react-icons/md'
+import { useNavigate } from 'react-router-dom'
 
 const Settings = () => {
   const [progress, setProgress] = useState<any>()
@@ -28,6 +31,7 @@ const Settings = () => {
   const pagesVisited = pageNumber * usersPerPage;
 
   const pageCount = Math.ceil(users.length / usersPerPage);
+  const navigate = useNavigate()
 
   const changePage = (selectedItem: {
     selected: number;
@@ -39,8 +43,13 @@ const Settings = () => {
     try {
       const text = await getWhatsappMessageFormat()
       setMessage(text.data.data[0].message)
-    } catch (error) {
-      console.error("error ==> ", error)
+    } catch (error: any) {
+      console.log("Your errorrrr =? ", error)
+      if (error?.message == "jwt expired")
+      {
+        removeFromStorage(LocalStorageKeys.USER)
+        navigate("/login")
+      }
     }
   }
 
@@ -48,8 +57,13 @@ const Settings = () => {
     try {
       await updateWhatsappMessageFormat(message)
       fetchFormat()
-    } catch (error) {
-      console.error("error ==> ", error)
+    } catch (error: any) {
+      console.log("Your errorrrr =? ", error)
+      if (error?.message == "jwt expired")
+      {
+        removeFromStorage(LocalStorageKeys.USER)
+        navigate("/login")
+      }
     }
   }
 
@@ -75,6 +89,23 @@ const Settings = () => {
         console.log("error ===> ", error)
     }
   };
+
+  const handleUserDelete = async (user_id: any) => {
+    try {
+      const user = await deleteUser(user_id)
+      if (user.data.data.users.deleted == true)
+      {
+        fetchUsers()
+      }
+    } catch (error: any) {
+      console.log("Your errorrrr =? ", error)
+      if (error?.message == "jwt expired")
+      {
+        removeFromStorage(LocalStorageKeys.USER)
+        navigate("/login")
+      }
+    }
+  }
 
   useEffect(() => {
     fetchFormat()
@@ -152,7 +183,7 @@ const Settings = () => {
         </div>
       </div>
       </div>
-      <Signup />
+      <Signup fetchUsers={fetchUsers}/>
     </div>
       <div className='card-container'>
       <Heading2 className='heading2-right-aligned' text='Users' />
@@ -164,17 +195,21 @@ const Settings = () => {
                 <th>Username</th>
                 <th>Department</th>
                 <th>User Role</th>
+                <th>Email</th>
+                <th>Actions</th>
               </tr>
               {users
               .slice(pagesVisited, pagesVisited + usersPerPage)
               .map((user) => (
-              <tr className="table-row">
+              <tr key={user.id} className="table-row">
                 <td>{user.id}</td>
                 <td>{user.first_name}</td>
                 <td>{user.last_name}</td>
                 <td>{user.user_name}</td>
                 <td>{user.department ? user.department.name : '-'}</td>
                 <td>{user.user_type.name}</td>
+                <td>{user.email}</td>
+                <td><MdDelete className="delete-btn" color="#252525" onClick={() => handleUserDelete(user.id)}/></td>
               </tr>
                   ))}
             </table>

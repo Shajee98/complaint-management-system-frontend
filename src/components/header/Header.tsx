@@ -11,10 +11,14 @@ import Heading2 from '../typography/heading-2/Heading2'
 const Header = () => {
     const [visible, setVisible] = useState(false)
     const navigate = useNavigate()
-    const logout = () => {
-      userLogout()
-      removeFromStorage(LocalStorageKeys.USER)
-      navigate('/login')
+    const logout = async () => {
+      try {
+        await userLogout()
+        removeFromStorage(LocalStorageKeys.USER)
+        navigate('/login')
+      } catch (error) {
+        
+      }
     }
   return (
     <div className='header-container shadow'>

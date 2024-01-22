@@ -5,9 +5,10 @@ export const catchAxiosError = async (func: Promise<AxiosResponse<any, any>>) =>
       const response = await func
       return response
     } catch (error: any) {
-      console.log(error, 'errror from catchAxios');
+      console.log('errror from catchAxios', error.message);
       const message =
-        error?.response?.data?.error?.message || 'Something went wrong'
+        error.message || 'Something went wrong'
+      console.log("message ===> ", message)
       throw new Error(message);
     }
   }  

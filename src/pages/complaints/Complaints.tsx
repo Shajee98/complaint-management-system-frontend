@@ -13,13 +13,14 @@ import {
 } from "../../components/drop-down/ReactSelectStyles";
 import ComplaintDetails from "../../components/modal/complaint-details/ComplaintDetails";
 import Comments from "../../components/modal/comments/Comments";
-import { LocalStorageKeys, getFromStorage } from "../../../utils/localStorage";
+import { LocalStorageKeys, getFromStorage, removeFromStorage } from "../../../utils/localStorage";
 import Header from "../../components/header/Header";
 import Navbar from "../../components/navbar/Navbar";
 import { getAllComplaints, getAllDepartments } from "./service/Complaint";
 import { getAllStatuses } from "../../components/modal/create-complaint/services/CreateComplaint";
 import ReactPaginate from "react-paginate";
 import moment from 'moment-timezone'
+import { useNavigate } from "react-router-dom";
 
 const Complaints = () => {
   const [isSuperAdmin, setIsSuperAdmin] = useState(true);
@@ -46,6 +47,7 @@ const Complaints = () => {
   const [pageNumber, setPageNumber] = useState(0);
 
   const usersPerPage = 10;
+  const navigate = useNavigate()
   const pagesVisited = pageNumber * usersPerPage;
 
   const pageCount = Math.ceil(complaints.length / usersPerPage);
@@ -133,16 +135,25 @@ const Complaints = () => {
         complaint_status_id: selectedStatus.id,
         offset: offset,
       });
-      setComplaints(response.data.data.complaints.rows);
-      setComplaintsCopy(response.data.data.complaints.rows);
-    } catch (error) {
-      console.log("error ===> ", error);
+      if (response.data?.status?.success == true)
+      {
+        setComplaints(response.data.data.complaints.rows);
+        setComplaintsCopy(response.data.data.complaints.rows);
+      }
+    } catch (error: any) {
+      console.log("Your errorrrr =? ", error)
+      if (error?.message == "jwt expired")
+      {
+        removeFromStorage(LocalStorageKeys.USER)
+        navigate("/login")
+      }
     }
   };
 
   useEffect(() => {
     fetchComplaints(selectedDept?.id, 0);
   }, [complaintType, selectedStatus]);
+
   const fetchDepartments = async () => {
     try {
       const response = await getAllDepartments();
@@ -170,8 +181,8 @@ const Complaints = () => {
         });
         fetchComplaints(user?.user?.department_id, 0);
       } else if (user?.user?.user_type_id == 2) {
-        setSelectedDept(deptCopy[4]);
-        fetchComplaints(deptCopy[4].id, 0);
+        setSelectedDept(deptCopy[deptCopy.length - 1]);
+        fetchComplaints(deptCopy[deptCopy.length - 1].id, 0);
         setIsSuperAdmin(true);
       }
       console.log("departments ==> ", departments);
@@ -216,7 +227,7 @@ const Complaints = () => {
           break;
       }
     });
-    console.log("statusesCopy ==> ", statusesCopy);
+    console.log("statusesCopy ==> ", statusModified);
     setStatuses([...statusModified]);
     setSelectedStatus(statusesCopy[0]);
     console.log("departments ==> ", departments);
@@ -272,8 +283,14 @@ const Complaints = () => {
     fetchDepartments();
     fetchStatuses();
     setPresetDate(presetDates[0])
-    // fetchComplaints(selectedDept?.id, 0)
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+    fetchComplaints(selectedDept?.id, 0)},60000
+    )
+    return () => clearInterval(interval)
+  }, [selectedDept])
 
   const handleDepartmentChange = (option: any) => {
     console.log("selectedDept ===> ", option);
@@ -605,7 +622,7 @@ const Complaints = () => {
                     defaultValue={selectedStatus}
                     styles={StatusStyle}
                     onChange={handleStatusChange}
-                    options={statuses}
+                    options={statuses.length != 0 ? statuses : []}
                   />
                 )}
               </div>

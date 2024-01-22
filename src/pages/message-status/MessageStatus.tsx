@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { LocalStorageKeys, getFromStorage } from '../../../utils/localStorage'
+import { LocalStorageKeys, getFromStorage, removeFromStorage } from '../../../utils/localStorage'
 import Header from '../../components/header/Header'
 import Navbar from "../../components/navbar/Navbar";
 import Heading1 from '../../components/typography/heading-1/Heading1';
@@ -8,6 +8,7 @@ import ReactPaginate from 'react-paginate';
 import { getAllStatuses } from './service/MessageStatus';
 import './MessageStatus.scss'
 import Heading2 from '../../components/typography/heading-2/Heading2';
+import { useNavigate } from 'react-router-dom';
 
 
 const MessageStatus = () => {
@@ -18,7 +19,7 @@ const MessageStatus = () => {
 
     const usersPerPage = 10;
     const pagesVisited = pageNumber * usersPerPage;
-  
+    const navigate = useNavigate()
     const pageCount = Math.ceil(messagesStatuses.length / usersPerPage);
   
     const changePage = (selectedItem: {
@@ -45,8 +46,13 @@ const MessageStatus = () => {
             setNotDelivered(not_delivered)
             setMessagesStatuses(response.data.data)
             // setUsersCopy(response.data.data.users.rows)
-        } catch (error) {
-            console.log("error ===> ", error)
+        } catch (error: any) {
+          console.log("Your errorrrr =? ", error)
+          if (error?.message == "jwt expired")
+          {
+            removeFromStorage(LocalStorageKeys.USER)
+            navigate("/login")
+          }
         }
       };
     

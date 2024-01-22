@@ -2,6 +2,23 @@ import { useNavigate } from "react-router-dom";
 import axiosClient from "../config/axios/axios";
 import axiosClientFormData from "../config/axios/axiosFormData";
 
+// const router = useNavigate()
+export const deleteRequest =async (url: string) => {
+  try {
+    const response = await axiosClient.delete(url)
+    return response
+  } catch (error: any) {
+    if (error.response.data.status.code == 401)
+    {
+      console.log("Your token has expired")
+      throw new Error(error.response.data.error.message)
+    }
+    else
+    {
+      throw new Error(error.response.data.error.message)
+    }
+  }
+}
 export const getRequest = async (url: string) => {
   try {
     // const user = JSON.parse(localStorage.getItem('user') as string)
@@ -18,8 +35,15 @@ export const getRequest = async (url: string) => {
     )
     return response;
   } catch (error: any) {
-    console.log('error from getting response error...', error)
-    throw new Error(error || 'Something went wrong');
+    if (error.response.data.status.code == 401)
+    {
+      console.log("Your token has expired")
+      throw new Error(error.response.data.error.message)
+    }
+    else
+    {
+      throw new Error(error.response.data.error.message)
+    }
   }
 }
 
@@ -36,7 +60,15 @@ export const postRequest = async (url: string, data?: any, options?: any) => {
     return response;
     
   } catch (error: any) {
-    throw new Error(error?.response?.data?.error?.message || 'Something went wrong');
+    if (error.response.data.status.code == 401)
+    {
+      console.log("Your token has expired")
+      throw new Error(error.response.data.error.message)
+    }
+    else
+    {
+      throw new Error(error.response.data.error.message)
+    }
   }
 }
 export const postRequestFormData = async (url: string, data?: any, options?: any) => {
@@ -54,12 +86,14 @@ export const postRequestFormData = async (url: string, data?: any, options?: any
     return response;
     
   } catch (error: any) {
-    console.log("error aagya ======> ", error)
-    // if (error.response.data.status.code == 401)
-    // {
-    //   window.location.href == "/"
-    // }
-    throw new Error(error || 'Something went wrong');
+    if (error.response.data.status.code == 401)
+    {
+      console.log("Your token has expired")
+      throw new Error(error.response.data.error.message)
+    }
+    else
+    {
+      throw new Error(error.response.data.error.message)
+    }
   }
 }
-

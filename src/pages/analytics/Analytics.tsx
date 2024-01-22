@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Doughnut, Line } from "react-chartjs-2"
-import { LocalStorageKeys, getFromStorage } from "../../../utils/localStorage"
+import { LocalStorageKeys, getFromStorage, removeFromStorage } from "../../../utils/localStorage"
 import Header from "../../components/header/Header"
 import Navbar from "../../components/navbar/Navbar"
 import Heading2 from "../../components/typography/heading-2/Heading2"
@@ -17,6 +17,9 @@ import {
     Filler,
   } from "chart.js";
 import { fetchComplaintsByMonth, getWhatsappResponsesCount } from './service/Analytics'
+import SecondaryButton from '../../components/secondary-button/SecondaryButton'
+import './Analytics.scss'
+import { useNavigate } from 'react-router-dom'
 
 ChartJS.register(
     CategoryScale,
@@ -65,11 +68,22 @@ const Analytics = () => {
         }]
       })
   const [complaintsByDate, setComplaintsByDate] = useState([]);
-
+  const [complaintType, toggleComplaintType] = useState(1);
+  const navigate = useNavigate()
 
     const fetchGraphDetails = async () => {
-        const graphDetails = await fetchComplaintsByMonth(1)
+      try {
+        const graphDetails = await fetchComplaintsByMonth(1, complaintType)
         setComplaintsByDate(graphDetails.data.data.complaints)
+        
+      } catch (error: any) {
+        console.log("Your errorrrr =? ", error)
+      if (error?.message == "jwt expired")
+      {
+        removeFromStorage(LocalStorageKeys.USER)
+        navigate("/login")
+      }
+      }
     }
 
     useEffect(() => {
@@ -79,11 +93,11 @@ const Analytics = () => {
     useEffect(() => {
         fetchGraphDetails()
         fetchWhatsappResponsesCount()
-    }, [])
+    }, [complaintType])
 
       const fetchWhatsappResponsesCount = async () => {
         try {
-          const whatsappResponsesCounts = await getWhatsappResponsesCount()
+          const whatsappResponsesCounts = await getWhatsappResponsesCount(complaintType)
           var yes = Number(whatsappResponsesCounts.data.data.responses[0].positive)
           var no = Number(whatsappResponsesCounts.data.data.responses[0].negetive)
           var yespct = ((whatsappResponsesCounts.data.data.responses[0].positive/(yes+no))*100).toString()
@@ -106,8 +120,13 @@ const Analytics = () => {
                 hoverOffset: 4
               }]
           })
-        } catch (error) {
-          console.log("error ===> ", error)
+        } catch (error: any) {
+          console.log("Your errorrrr =? ", error)
+      if (error?.message == "jwt expired")
+      {
+        removeFromStorage(LocalStorageKeys.USER)
+        navigate("/login")
+      }
         }
       }
   return (
@@ -130,6 +149,24 @@ const Analytics = () => {
             : "login-signup-container"
         }`}
       >
+        <div className='buttons-container'>
+                    <SecondaryButton
+                      toggle={true}
+                      className={`complaint-toggle ${
+                        complaintType == 1 ? "active-tab" : "inactive"
+                      }`}
+                      text="AEG"
+                      onClick={() => toggleComplaintType(1)}
+                    />
+                    <SecondaryButton
+                      toggle={true}
+                      className={`complaint-toggle ${
+                        complaintType == 2 ? "active-tab" : "inactive"
+                      }`}
+                      text="TicketJee"
+                      onClick={() => toggleComplaintType(2)}
+                    />
+        </div>
                     <div className="graph-chart-container">
             <div className="graph-container">
             <Heading2 text="No. Of Complaints" className="left-aligned-heading"/>
