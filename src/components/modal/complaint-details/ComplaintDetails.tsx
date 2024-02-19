@@ -8,7 +8,7 @@ import DropDown from '../../drop-down/DropDown'
 import { FormSelectStyle, StatusStyle } from '../../drop-down/ReactSelectStyles'
 import SecondaryButton from '../../secondary-button/SecondaryButton'
 import { getAllDepartments, getAllDeptStaffs, getAllStatuses, getComplaintById, getComplaintTypes, updateComplaint } from './services/ComplaintDetails'
-import { API_URL } from '../../../../utils/apiConfig'
+import { API_URL, STATIC_FILE_URL } from '../../../../utils/apiConfig'
 import { LocalStorageKeys, getFromStorage } from '../../../../utils/localStorage'
 import DescriptionDD from '../../description-dropdown/DescriptionDD'
 import FormTextArea from '../../form-textarea/FormTextArea'
@@ -425,7 +425,7 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
           <div className='attachments-list'>
           {previews.map((preview, index) => (
               <div key={index} className='attachment-container'>
-                <a target='_blank' href={`${API_URL}/uploads/${preview?.fileName}`} className='attachment-name'>{preview?.fileName}</a>
+                <a target='_blank' href={`${STATIC_FILE_URL}/uploads/attachments/${preview?.fileName}`} className='attachment-name'>{preview?.fileName}</a>
                 <AiOutlineClose onClick={() => handleRemoveAttachment(preview)}/>
                 </div>
             ))}
