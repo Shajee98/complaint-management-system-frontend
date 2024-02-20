@@ -12,6 +12,7 @@ import { API_URL, STATIC_FILE_URL } from '../../../../utils/apiConfig'
 import { LocalStorageKeys, getFromStorage } from '../../../../utils/localStorage'
 import DescriptionDD from '../../description-dropdown/DescriptionDD'
 import FormTextArea from '../../form-textarea/FormTextArea'
+import { postRequestFormData } from '../../../../utils/auth'
 
 interface Props {
   onClose: () => void
@@ -38,6 +39,8 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
   const descriptionContainerRef = createRef<HTMLDivElement>()
   const [descriptionDD, setDescriptionDD] = useState(false)
   const [dataFetched, setDataFetched] = useState(false)
+  const [prevFileNames, setPreviousFileNames] = useState<any[]>([])
+
 
   const handleDepartmentChange = (option: any) => {
     console.log("selectedDept ===> ", option)
@@ -69,16 +72,28 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
     }
   
     const handleRemoveAttachment = (image: { file: any; id: number }) => {
+      const changedAttachment = attachments.filter((p) => p.id !== image.id)
+      console.log("attachments ===> ", changedAttachment)
+      const changedPreviews = previews.filter((p) => p.id !== image.id)
+      console.log("attachments ===> ", changedPreviews)
       setAttachments((prevAttachments) => (
         prevAttachments.filter((i) => i.id !== image.id)
       ));
       setPreviews((prevPreviews) =>
         prevPreviews.filter((p) => p.id !== image.id)
       );
-      console.log("Previews ===> ", previews)
-      console.log("Attachments ===> ", attachments)
   
     };
+
+    const handleRemovePrevAttachment = (file: {fileName: string, id: number}) => {
+      
+      const changed = prevFileNames.filter((p) => p.id !== file.id)
+       
+      setPreviousFileNames((prevFiles) => (
+      prevFiles.filter((p) => p.id !== file.id)
+      ));
+    console.log("prevFileNames ===> ", changed)
+    }
   
     const addPreviews = (
       newPreviews: {
@@ -86,8 +101,6 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
         id: number;
         blob: File
       }[]
-  
-  
     ) => {
       console.log("previews ===> ", previews)
       for (let i = 0; i < newPreviews?.length; i++) {
@@ -277,7 +290,7 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
             {id: attachment.id, fileName: attachment.fileName}
           ))
           console.log("attachmentsRetrieved ==> ", attachmentsRetrieved)
-          setPreviews([...attachmentsRetrieved])
+          setPreviousFileNames([...attachmentsRetrieved])
           setDataFetched(true)
           fetchStaffs(data?.department?.id)
         }
@@ -342,6 +355,18 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
           console.log("attachments[i].blob", attachments[i].blob) 
           payload.append("attachments", attachments[i].blob);
         }
+        if (prevFileNames.length != 0)
+        {
+          let fileNames: string[] = []
+          for (let i = 0; i < prevFileNames.length; i++) {
+            fileNames.push(prevFileNames[i].fileName)
+          }
+          payload.append("unremovedOldAttachments", JSON.stringify(fileNames))
+        }
+        if (prevFileNames.length == 0)
+        {
+          payload.append("unremovedOldAttachments", '[]')
+        }
         payload.append("complaint_status_id", String(selectedStatus.id));
         for (var key of payload.entries()) {
           console.log("payload ==> ", key[0] + ', ' + key[1]);
@@ -353,7 +378,12 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
         //   options
         // )
         console.log("attachments === > ", attachments)
-        await updateComplaint(complaintId, payload, options)
+        // await updateComplaint(complaintId, payload, options)
+        await postRequestFormData(
+          `/complaints/update-complaint/${complaintId}`,
+          payload,
+          options
+        )
         // .then((response) => {
         //   console.log("response ==> ", response)
         //   if (response.data.status.code == 401)
@@ -425,8 +455,14 @@ const ComplaintDetails = ({onClose, complaintId, fetchComplaints}: Props) => {
           <div className='attachments-list'>
           {previews.map((preview, index) => (
               <div key={index} className='attachment-container'>
-                <a target='_blank' href={`${STATIC_FILE_URL}/uploads/attachments/${preview?.fileName}`} className='attachment-name'>{preview?.fileName}</a>
+                <a target='_blank' href={`${STATIC_FILE_URL}/uploads/attachments/${preview?.blob?.name}`} className='attachment-name'>{preview?.blob?.name}</a>
                 <AiOutlineClose onClick={() => handleRemoveAttachment(preview)}/>
+                </div>
+            ))}
+          {prevFileNames.map((prevFile, index) => (
+              <div key={index} className='attachment-container'>
+                <a target='_blank' href={`${STATIC_FILE_URL}/uploads/attachments/${prevFile?.fileName}`} className='attachment-name'>{prevFile?.fileName}</a>
+                <AiOutlineClose onClick={() => handleRemovePrevAttachment(prevFile)}/>
                 </div>
             ))}
           </div>
